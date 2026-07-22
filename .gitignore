@@ -1,0 +1,4 @@
+generated/
+*.bak-*
+__pycache__/
+*.pyc

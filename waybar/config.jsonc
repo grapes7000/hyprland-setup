@@ -1,0 +1,39 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "margin-top": 6,
+  "margin-left": 10,
+  "margin-right": 10,
+  "spacing": 6,
+  "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right":  ["cpu", "memory", "pulseaudio", "network", "tray"],
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate",
+    "format-icons": { "default": "" , "active": "" , "urgent": "" }
+  },
+  "hyprland/window": { "max-length": 60, "separate-outputs": true },
+  "clock": {
+    "format": "  {:%a %d %b   %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+  "cpu":    { "format": "  {usage}%", "interval": 2 },
+  "memory": { "format": "  {}%" },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "  muted",
+    "format-icons": { "default": ["", "", ""] },
+    "on-click": "pamixer -t",
+    "on-click-right": "pavucontrol"
+  },
+  "network": {
+    "format-wifi": "  {essid}",
+    "format-ethernet": "  {ipaddr}",
+    "format-disconnected": "  off",
+    "tooltip-format": "{ifname}: {ipaddr}"
+  },
+  "tray": { "spacing": 10 }
+}

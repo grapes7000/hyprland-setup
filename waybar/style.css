@@ -1,0 +1,41 @@
+@import "generated/theme.css";
+
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 13px;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+
+window#waybar {
+  background: transparent;
+  color: @text;
+}
+
+.modules-left, .modules-center, .modules-right { }
+
+#workspaces, #window, #clock, #cpu, #memory, #pulseaudio, #network, #tray {
+  background: alpha(@bg_alt, 0.85);
+  padding: 2px 12px;
+  margin: 2px 0;
+  border-radius: 10px;
+}
+
+#workspaces button {
+  color: @text_dim;
+  padding: 0 6px;
+}
+#workspaces button.active {
+  color: @accent;
+}
+#workspaces button.urgent {
+  color: @urgent;
+}
+
+#clock  { color: @accent; }
+#cpu    { color: @text; }
+#memory { color: @accent2; }
+#pulseaudio { color: @text; }
+#network { color: @text_dim; }
+#pulseaudio.muted { color: @urgent; }
