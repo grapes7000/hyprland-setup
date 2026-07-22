@@ -8,7 +8,15 @@
   "spacing": 6,
   "modules-left":   ["hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right":  ["cpu", "memory", "pulseaudio", "network", "tray"],
+  "modules-right":  ["custom/vpn", "cpu", "memory", "pulseaudio", "network", "tray"],
+
+  "custom/vpn": {
+    "exec": "~/.config/waybar/scripts/vpn.sh",
+    "return-type": "json",
+    "interval": 5,
+    "on-click": "~/.config/waybar/scripts/vpn.sh"
+  },
+
 
   "hyprland/workspaces": {
     "format": "{icon}",

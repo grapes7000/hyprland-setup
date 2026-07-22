@@ -39,3 +39,7 @@ window#waybar {
 #pulseaudio { color: @text; }
 #network { color: @text_dim; }
 #pulseaudio.muted { color: @urgent; }
+
+#custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 10px; background: alpha(@bg_alt, 0.85); }
+#custom-vpn.protected { color: @accent; }
+#custom-vpn.exposed { color: @urgent; }
