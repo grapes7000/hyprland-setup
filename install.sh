@@ -16,6 +16,7 @@ link() {  # link <src> <dest>
 
 echo "Installing hyprland-setup from $REPO"
 link "$REPO/hypr"           "$CFG/hypr"
+link "$REPO/nvim"           "$CFG/nvim"
 link "$REPO/waybar"         "$CFG/waybar"
 link "$REPO/kitty/kitty.conf" "$CFG/kitty/kitty.conf"
 link "$REPO/starship/starship.toml" "$CFG/starship.toml"
@@ -26,7 +27,8 @@ echo "  installed shortcuts -> ~/.local/bin"
 # fish PATH
 if [ -d "$CFG/fish" ] && ! grep -q '.local/bin' "$CFG/fish/config.fish" 2>/dev/null; then
     echo 'fish_add_path -g ~/.local/bin' >> "$CFG/fish/config.fish"
-    echo "  added ~/.local/bin to fish PATH"
+    echo 'starship init fish | source' >> "$CFG/fish/config.fish"
+    echo "  added ~/.local/bin to PATH + starship init to fish"
 fi
 
 # offer to clone the themes engine
