@@ -26,17 +26,17 @@
       "6": [], "7": [], "8": [], "9": [], "10": []
     },
     "format-icons": {
-      "1": " web",
-      "2": " term",
-      "3": " code",
-      "4": " files",
-      "5": " media",
-      "6": " chat",
-      "7": " doc",
-      "8": " sys",
-      "9": " extra",
-      "10": " vm",
-      "default": " "
+      "1": "  web",
+      "2": "  term",
+      "3": "  code",
+      "4": "  files",
+      "5": "  media",
+      "6": "  chat",
+      "7": "  doc",
+      "8": "  sys",
+      "9": "  extra",
+      "10": "  vm",
+      "default": ""
     }
   },
 
@@ -54,22 +54,22 @@
     "tooltip-format": "Running apps"
   },
   "clock": {
-    "format": "  {:%a %d %b   %H:%M}",
+    "format": "  {:%a %d %b   %H:%M}",
     "tooltip-format": "<tt>{calendar}</tt>"
   },
-  "cpu":    { "format": "  {usage}%", "interval": 2 },
-  "memory": { "format": "  {}%" },
+  "cpu":    { "format": "  {usage}%", "interval": 2 },
+  "memory": { "format": "󰍛  {}%" },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "  muted",
-    "format-icons": { "default": ["", "", ""] },
+    "format": "{icon}  {volume}%",
+    "format-muted": "  muted",
+    "format-icons": { "default": ["", "", ""] },
     "on-click": "pamixer -t",
     "on-click-right": "pavucontrol"
   },
   "network": {
-    "format-wifi": "  {essid}",
-    "format-ethernet": "  {ipaddr}",
-    "format-disconnected": "  off",
+    "format-wifi": "  {essid}",
+    "format-ethernet": "  {ipaddr}",
+    "format-disconnected": "  off",
     "tooltip-format": "{ifname}: {ipaddr}"
   },
   "tray": { "spacing": 10 }
