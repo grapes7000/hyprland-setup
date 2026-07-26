@@ -46,7 +46,7 @@ works on any distro, no Hyprland required. See [Reusable parts](#reusable-parts)
 ## Quick start
 
 ```sh
-git clone <this-repo-url> ~/hyprland-setup
+git clone https://github.com/grapes7000/hyprland-setup.git ~/hyprland-setup
 cd ~/hyprland-setup
 ./install.sh
 ```
@@ -65,12 +65,10 @@ from a TTY.
 ### Theming
 
 Colors, blur, shadows and wallpapers come from the separate
-[`themes`](../themes) repo (the portable theme engine). Install it too:
-```sh
-git clone <themes-repo-url> ~/themes && cd ~/themes && ./install.sh
-theme catppuccin_mocha      # apply a theme (regenerates hypr/waybar/kitty/starship live)
-```
-`install.sh` here will offer to clone `themes` for you if it isn't present.
+[`themes`](https://github.com/grapes7000/themes) repo. The main installer clones
+it to `~/themes` when needed, runs its installer, and applies
+`catppuccin_mocha`, so no second command is required. Set a different initial
+theme with `HYPRLAND_THEME=gruvbox ./install.sh`.
 
 ---
 

@@ -4,6 +4,9 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
+THEMES_DIR="${THEMES_DIR:-$HOME/themes}"
+THEMES_REPO="${THEMES_REPO:-https://github.com/grapes7000/themes.git}"
+DEFAULT_THEME="${HYPRLAND_THEME:-catppuccin_mocha}"
 ts="$(date +%s)"
 
 link() {  # link <src> <dest>
@@ -12,6 +15,21 @@ link() {  # link <src> <dest>
     [ -e "$dest" ] && [ ! -L "$dest" ] && mv "$dest" "$dest.bak-$ts" && echo "  backed up $dest"
     ln -sfn "$src" "$dest"
     echo "  linked $dest"
+}
+
+ensure_shell_path() {
+    local file="$1" line='export PATH="$HOME/.local/bin:$PATH"'
+    touch "$file"
+    grep -Fqx "$line" "$file" || printf '\n%s\n' "$line" >> "$file"
+}
+
+enable_theme_target() {
+    local target="$1" targets="$CFG/theme-engine/targets.conf"
+    if grep -Eq "^[[:space:]]*#[[:space:]]*$target[[:space:]]*$" "$targets"; then
+        sed -i -E "s|^[[:space:]]*#[[:space:]]*$target[[:space:]]*$|$target|" "$targets"
+    elif ! grep -Eq "^[[:space:]]*$target[[:space:]]*$" "$targets"; then
+        printf '%s\n' "$target" >> "$targets"
+    fi
 }
 
 echo "Installing hyprland-setup from $REPO"
@@ -24,17 +42,22 @@ mkdir -p "$HOME/.local/bin"
 install -m755 "$REPO/bin/shortcuts" "$HOME/.local/bin/shortcuts"
 echo "  installed shortcuts -> ~/.local/bin"
 
-# fish PATH
+ensure_shell_path "$HOME/.zshrc"
+ensure_shell_path "$HOME/.bashrc"
 if [ -d "$CFG/fish" ] && ! grep -q '.local/bin' "$CFG/fish/config.fish" 2>/dev/null; then
     echo 'fish_add_path -g ~/.local/bin' >> "$CFG/fish/config.fish"
     echo 'starship init fish | source' >> "$CFG/fish/config.fish"
-    echo "  added ~/.local/bin to PATH + starship init to fish"
+fi
+echo "  ensured ~/.local/bin is on PATH for zsh and bash"
+
+if [ ! -x "$THEMES_DIR/install.sh" ]; then
+    echo "Cloning theme engine into $THEMES_DIR"
+    git clone "$THEMES_REPO" "$THEMES_DIR"
 fi
 
-# offer to clone the themes engine
-if [ ! -d "$CFG/hypr/themes" ] && [ ! -d "$HOME/themes" ]; then
-    echo
-    echo "The theme engine (colors/wallpapers) lives in the separate 'themes' repo."
-    echo "Clone it, then run: cd ~/themes && ./install.sh && theme catppuccin_mocha"
-fi
-echo "Done. Log into Hyprland, then run: theme <name>"
+"$THEMES_DIR/install.sh"
+for target in hypr waybar kitty starship nvim wallpaper wofi dunst hyprlock; do
+    enable_theme_target "$target"
+done
+"$HOME/.local/bin/theme" "$DEFAULT_THEME"
+echo "Done. Applied theme: $DEFAULT_THEME"
