@@ -2,7 +2,7 @@
 
 A modular, themeable **Hyprland** desktop, built to run in a QEMU/KVM Arch
 guest (over SPICE) but usable on any Arch/Wayland machine. Comes with a
-28-theme engine (see the companion [`themes`](#theming) repo), per-theme
+36-theme engine (see the companion [`themes`](#theming) repo), per-theme
 wallpapers, blur/shadow eye-candy, and a set of small helper commands.
 
 > **Backup-first:** this repo exists so the whole setup can be restored if the
