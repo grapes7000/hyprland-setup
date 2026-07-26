@@ -1,0 +1,8 @@
+#!/bin/bash
+# Quick workspace switcher using wofi
+
+selected=$(seq 1 10 | wofi --dmenu -p "󰣇 Go to workspace:" 2>/dev/null)
+
+if [ -n "$selected" ]; then
+    hyprctl dispatch workspace "$selected"
+fi
