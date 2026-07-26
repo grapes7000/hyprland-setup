@@ -6,6 +6,7 @@
   border: none;
   border-radius: 0;
   min-height: 0;
+  transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 window#waybar {
@@ -15,7 +16,7 @@ window#waybar {
 
 .modules-left, .modules-center, .modules-right { }
 
-#workspaces, #window, #clock, #cpu, #memory, #pulseaudio, #network, #tray {
+#workspaces, #clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
   background: alpha(@bg_alt, 0.85);
   padding: 2px 12px;
   margin: 2px 0;
@@ -25,12 +26,21 @@ window#waybar {
 #workspaces button {
   color: @text_dim;
   padding: 0 6px;
+  font-size: 12px;
+}
+#workspaces button:hover {
+  opacity: 0.8;
 }
 #workspaces button.active {
   color: @accent;
+  font-weight: bold;
+  background: alpha(@accent, 0.2);
+  padding: 0 8px;
+  border-radius: 6px;
 }
 #workspaces button.urgent {
   color: @urgent;
+  font-weight: bold;
 }
 
 #clock  { color: @accent; }
@@ -43,3 +53,6 @@ window#waybar {
 #custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 10px; background: alpha(@bg_alt, 0.85); }
 #custom-vpn.protected { color: @accent; }
 #custom-vpn.exposed { color: @urgent; }
+
+#custom-window-tracker { color: @accent; }
+#custom-running-apps { color: @accent2; font-size: 14px; letter-spacing: 2px; }
