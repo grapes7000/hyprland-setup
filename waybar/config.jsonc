@@ -6,7 +6,7 @@
   "margin-left": 10,
   "margin-right": 10,
   "spacing": 6,
-  "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+  "modules-left":   ["hyprland/workspaces", "custom/window-tracker"],
   "modules-center": ["clock"],
   "modules-right":  ["custom/vpn", "cpu", "memory", "pulseaudio", "network", "tray"],
 
@@ -23,7 +23,13 @@
     "on-click": "activate",
     "format-icons": { "default": "" , "active": "" , "urgent": "" }
   },
-  "hyprland/window": { "max-length": 60, "separate-outputs": true },
+
+  "custom/window-tracker": {
+    "exec": "~/.config/waybar/scripts/window-tracker.sh",
+    "return-type": "text",
+    "max-length": 60,
+    "on-click": "hyprctl dispatch focuswindow ^0"
+  },
   "clock": {
     "format": "  {:%a %d %b   %H:%M}",
     "tooltip-format": "<tt>{calendar}</tt>"

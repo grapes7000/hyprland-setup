@@ -15,7 +15,7 @@ window#waybar {
 
 .modules-left, .modules-center, .modules-right { }
 
-#workspaces, #window, #clock, #cpu, #memory, #pulseaudio, #network, #tray {
+#workspaces, #clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
   background: alpha(@bg_alt, 0.85);
   padding: 2px 12px;
   margin: 2px 0;
@@ -43,3 +43,5 @@ window#waybar {
 #custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 10px; background: alpha(@bg_alt, 0.85); }
 #custom-vpn.protected { color: @accent; }
 #custom-vpn.exposed { color: @urgent; }
+
+#custom-window-tracker { color: @accent; }
