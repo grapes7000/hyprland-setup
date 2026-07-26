@@ -152,30 +152,37 @@ bind = $mod, Escape, exec, ~/.local/bin/power-menu
 Better organize floating windows:
 ```conf
 # In hypr/conf/windowrules.conf
-windowrule = float, pavucontrol
-windowrule = float, blueman-manager
-windowrule = float, nm-connection-editor
-windowrule = size 50% 50%, pavucontrol
-windowrule = center, pavucontrol
+windowrule = float,        class:^(pavucontrol)$
+windowrule = float,        class:^(blueman-manager)$
+windowrule = float,        class:^(nm-connection-editor)$
+windowrule = size 50% 50%, class:^(pavucontrol)$
+windowrule = center,       class:^(pavucontrol)$
 ```
+> Use the unified `windowrule` + `class:^(...)$` matcher (not `windowrulev2`,
+> which prints a deprecation overlay on Hyprland 0.56). These are already wired
+> up in `hypr/conf/windowrules.conf`.
 
 ### 13. **Opacity Layers**
-Add transparency to inactive windows for depth:
+> ⚠️ **Leave opacity to the theme engine.** Active/inactive window opacity is
+> generated per-theme into `hypr/generated/theme.conf` (the `decoration {}`
+> block, driven by `opacity` / `opacity_inactive` in each `themes/<name>.json`).
+> Adding per-window `windowrule = opacity ...` lines here would override the
+> active theme and break `theme <name>`. If you want a window *always* opaque
+> regardless of theme (e.g. an image viewer), that's the one safe exception:
+> ```conf
+> windowrule = opacity 1.0 1.0, class:^(feh)$
+> ```
+> Otherwise, tune the look by editing the theme's `opacity` values instead.
+
+Grouped windows (tabbed containers) don't conflict with the theme and are a
+nice addition — put them in `hypr/conf/behavior.conf`:
 ```conf
-# In hypr/conf/behavior.conf
-general {
-  layout = dwindle
-  resize_on_border = true
-}
-
 group {
-  groupbar_titles = true
-  groupbar_height = 8
+  groupbar {
+    height = 8
+    render_titles = true
+  }
 }
-
-# Per-workspace opacity
-windowrule = opacity 0.95 0.85, ^(kitty)$
-windowrule = opacity 0.98 0.95, ^(firefox)$
 ```
 
 ### 14. **Auto-Launch App Indicators**
