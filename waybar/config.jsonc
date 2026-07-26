@@ -6,7 +6,7 @@
   "margin-left": 10,
   "margin-right": 10,
   "spacing": 6,
-  "modules-left":   ["hyprland/workspaces", "custom/window-tracker"],
+  "modules-left":   ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5", "custom/ws6", "custom/ws7", "custom/ws8", "custom/ws9", "custom/ws10", "custom/window-tracker"],
   "modules-center": ["clock"],
   "modules-right":  ["custom/vpn", "cpu", "memory", "pulseaudio", "network", "custom/running-apps", "tray"],
 
@@ -18,26 +18,75 @@
   },
 
 
-  "hyprland/workspaces": {
-    "format": "{icon}",
-    "on-click": "activate",
-    "persistent-workspaces": {
-      "1": [], "2": [], "3": [], "4": [], "5": [],
-      "6": [], "7": [], "8": [], "9": [], "10": []
-    },
-    "format-icons": {
-      "1": "  web",
-      "2": "  term",
-      "3": "  code",
-      "4": "  files",
-      "5": "  media",
-      "6": "  chat",
-      "7": "  doc",
-      "8": "  sys",
-      "9": "  extra",
-      "10": "  vm",
-      "default": ""
-    }
+  "custom/ws1": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 1",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 1"
+  },
+  "custom/ws2": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 2",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 2"
+  },
+  "custom/ws3": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 3",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 3"
+  },
+  "custom/ws4": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 4",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 4"
+  },
+  "custom/ws5": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 5",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 5"
+  },
+  "custom/ws6": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 6",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 6"
+  },
+  "custom/ws7": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 7",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 7"
+  },
+  "custom/ws8": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 8",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 8"
+  },
+  "custom/ws9": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 9",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 9"
+  },
+  "custom/ws10": {
+    "exec": "~/.config/waybar/scripts/workspaces.sh 10",
+    "return-type": "json",
+    "interval": 1,
+    "escape": false,
+    "on-click": "hyprctl dispatch workspace 10"
   },
 
   "custom/window-tracker": {

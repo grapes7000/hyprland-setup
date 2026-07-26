@@ -16,31 +16,33 @@ window#waybar {
 
 .modules-left, .modules-center, .modules-right { }
 
-#workspaces, #clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
+#custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
+#custom-ws6, #custom-ws7, #custom-ws8, #custom-ws9, #custom-ws10,
+#clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
   background: alpha(@bg_alt, 0.85);
   padding: 2px 12px;
   margin: 2px 0;
   border-radius: 10px;
 }
 
-#workspaces button {
+#custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
+#custom-ws6, #custom-ws7, #custom-ws8, #custom-ws9, #custom-ws10 {
   color: @text_dim;
-  padding: 0 6px;
   font-size: 12px;
+  padding: 2px 6px;
 }
-#workspaces button:hover {
+
+#custom-ws1:hover, #custom-ws2:hover, #custom-ws3:hover, #custom-ws4:hover, #custom-ws5:hover,
+#custom-ws6:hover, #custom-ws7:hover, #custom-ws8:hover, #custom-ws9:hover, #custom-ws10:hover {
   opacity: 0.8;
 }
-#workspaces button.active {
+
+#custom-ws1.active, #custom-ws2.active, #custom-ws3.active, #custom-ws4.active, #custom-ws5.active,
+#custom-ws6.active, #custom-ws7.active, #custom-ws8.active, #custom-ws9.active, #custom-ws10.active {
   color: @accent;
+  font-size: 13px;
   font-weight: bold;
-  background: alpha(@accent, 0.2);
-  padding: 0 8px;
-  border-radius: 6px;
-}
-#workspaces button.urgent {
-  color: @urgent;
-  font-weight: bold;
+  padding: 2px 8px;
 }
 
 #clock  { color: @accent; }
