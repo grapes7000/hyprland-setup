@@ -17,7 +17,7 @@ entry is: *symptom → root cause → fix → why*.
 4. [Enabling virgl breaks VM boot (EGL_NOT_INITIALIZED)](#4-virgl-breaks-boot-egl_not_initialized)
 5. [Hyprland 0.56 config option changes](#5-hyprland-056-config-changes)
 6. [hyprpaper won't set the wallpaper](#6-hyprpaper-wont-set-wallpaper)
-7. [fish shell gotchas (heredocs, `$?`, PATH)](#7-fish-shell-gotchas)
+7. [Zsh shell notes](#7-zsh-shell-notes)
 8. [SSH into the guest from the host](#8-ssh-into-the-guest)
 9. [Quick reference: the golden commands](#9-quick-reference)
 
@@ -287,20 +287,15 @@ exec hyprpaper`) is the simplest wallpaper reload.
 
 ---
 
-## 7. fish shell gotchas
+## 7. Zsh shell notes
 
-The guest login shell is **fish**, which trips up bash-isms — especially when
-driving it over SSH (`ssh host 'cmd'` runs `cmd` in the login shell).
+The installer makes **Zsh** the login shell and uses Starship rather than
+Powerlevel10k. Its managed profile puts `~/.local/bin` on `PATH`, enables fzf,
+zoxide, direnv, autosuggestions, and syntax highlighting. Put customizations
+in `~/.zshrc.local`; it is sourced before syntax highlighting.
 
-| Problem | Fix |
-|---|---|
-| `$?` → `fish: $? is not the exit status` | fish uses `$status`. Or wrap in bash: `ssh host "bash -c '...'"` |
-| Heredocs (`<<EOF`) error: *Expected a string, but found a redirection* | fish heredocs differ; pipe a script to bash: `ssh host 'bash -s' <<'EOF' … EOF` |
-| Unquoted `$VAR` holding a command "not found" | fish doesn't word-split variables (neither does zsh); don't build commands in a var — call them inline |
-| `~/.local/bin` not on PATH | `fish_add_path -g ~/.local/bin` in `~/.config/fish/config.fish` |
-
-> When scripting a fish box non-interactively, the safe habit is
-> `ssh host 'bash -s' <<'REMOTE' … REMOTE` so the whole payload runs in bash.
+When scripting a box over SSH, explicitly invoke Bash for Bash-specific syntax:
+`ssh host 'bash -s' <<'REMOTE' … REMOTE`.
 
 ---
 

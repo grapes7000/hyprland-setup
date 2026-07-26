@@ -75,12 +75,14 @@ wlr-randr --output Virtual-1 --mode 2560x1440
 ## 5. Install the desktop
 
 ```sh
-sudo pacman -S --needed hyprland waybar kitty wofi hyprpaper hyprlock hypridle \
+sudo pacman -S --needed hyprland waybar wofi hyprpaper hyprlock hypridle \
   xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland \
-  grim slurp wl-clipboard starship ttf-jetbrains-mono-nerd \
+  grim slurp wl-clipboard \
   brightnessctl playerctl pamixer python-pillow
 
-git clone <hyprland-setup-url> ~/hyprland-setup && ~/hyprland-setup/install.sh
+git clone <hyprland-setup-url> ~/hyprland-setup
+~/hyprland-setup/install.sh --dry-run
+~/hyprland-setup/install.sh --desktop
 git clone <themes-url> ~/themes && ~/themes/install.sh
 theme catppuccin_mocha
 ```
