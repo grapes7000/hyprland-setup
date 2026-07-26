@@ -19,7 +19,7 @@
 
 
   "hyprland/workspaces": {
-    "format": "{name}",
+    "format": "{icon}",
     "on-click": "activate",
     "persistent-workspaces": {
       "1": [], "2": [], "3": [], "4": [], "5": [],
