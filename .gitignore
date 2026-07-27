@@ -4,3 +4,4 @@ __pycache__/
 nvim/lua/generated_theme.lua
 hypr/wallpapers/
 hypr/themes/
+hypr/hyprpaper.conf
