@@ -31,7 +31,7 @@ hyprland-setup/
 ├── kitty/         Kitty terminal config     [GENERIC — any distro]
 ├── zsh/           Oh My Zsh + plugin config [Arch installer target]
 ├── starship/      Powerlevel10k-style prompt [GENERIC — any shell/distro]
-├── bin/           shortcuts (keybind cheat-sheet command)
+├── bin/           helper scripts (shortcuts, power-menu, wofi-singleton, etc.)
 ├── docs/
 │   ├── TROUBLESHOOTING.md    ← every issue hit + how to fix it (READ THIS)
 │   └── VM-GUEST-SETUP.md     ← SPICE, virgl, resolution, SSH specifics
@@ -46,8 +46,8 @@ works on any distro, no Hyprland required. See [Reusable parts](#reusable-parts)
 ## Quick start
 
 ```sh
-git clone https://github.com/grapes7000/hyprland-setup.git ~/hyprland-setup
-cd ~/hyprland-setup
+git clone https://github.com/grapes7000/hyprland-setup.git ~/Projects/setup/hyprland-setup
+cd ~/Projects/setup/hyprland-setup
 ./install.sh --dry-run
 ./install.sh
 ```
@@ -66,9 +66,15 @@ Wofi, Dunst, or Hyprlock unless you explicitly select desktop linking:
 ./install.sh --desktop
 ```
 
-`--desktop` links only `~/.config/hypr`, `~/.config/waybar`, and
-`~/.config/nvim`, with the same archive-first behavior. Neither mode clones,
-installs, configures, or applies a theme engine.
+`--desktop` installs desktop packages (Hyprland, Waybar, Wofi, dunst,
+pavucontrol, rofi-rbw, etc.) and links `~/.config/hypr`, `~/.config/waybar`,
+and `~/.config/nvim`, plus copies helper scripts to `~/.config/bin/`. Neither
+mode clones, installs, configures, or applies a theme engine.
+
+> **Note:** The themes repo is a prerequisite for the full desktop experience.
+> `hyprland.conf` sources `generated/theme.conf` — the repo ships a gruvbox
+> fallback stub, but to switch themes you need the
+> [`themes`](https://github.com/grapes7000/themes) repo installed separately.
 
 `--dry-run` prints the exact package, archive, file, and login-shell plan
 without changing anything. `--yes` is the only non-interactive apply path.
@@ -83,11 +89,12 @@ listed in the dry-run/apply summary and must be reversed explicitly.
 
 The installer currently supports Arch-based distributions.
 
-Install the desktop packages it needs (Arch):
+The `--desktop` flag now installs these automatically, but for reference:
 ```sh
 sudo pacman -S --needed hyprland waybar wofi hyprpaper hyprlock hypridle \
   xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland \
-  grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
+  grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow \
+  dunst pavucontrol rofi-rbw wlr-randr neovim
 ```
 
 Then log out and pick **Hyprland** at your display manager, or run `Hyprland`
@@ -110,7 +117,10 @@ alone.
 |---|---|
 | `Super + Return` | Terminal (kitty) |
 | `Super + Space` | App launcher (wofi) |
+| `Super + B` | Password manager (rofi-rbw) |
 | `Super + T` | Theme picker |
+| `Super + Shift + W` | Workspace switcher (wofi) |
+| `Super + Shift + P` | Power menu (wofi) |
 | `Super + Shift + ?` | This cheat sheet |
 | `Super + Q` | Close window |
 | `Super + H/J/K/L` | Focus (vim directions) |

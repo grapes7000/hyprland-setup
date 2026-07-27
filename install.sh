@@ -12,7 +12,13 @@ STATE_DIR=""
 terminal_packages=(
     zsh kitty starship oh-my-zsh-git zsh-autosuggestions zsh-syntax-highlighting
     fzf ripgrep fd bat eza thefuck zoxide direnv yazi jq tldr
-    git curl unzip ttf-jetbrains-mono-nerd
+    git curl unzip ttf-jetbrains-mono-nerd neovim
+)
+desktop_packages=(
+    hyprland waybar wofi hyprpaper hyprlock hypridle
+    xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland
+    grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
+    dunst pavucontrol rofi-rbw wlr-randr
 )
 legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
 
@@ -114,7 +120,7 @@ preflight() {
     packages_to_remove=()
     local package
     for package in "${legacy_packages[@]}"; do
-        package_is_installed "$package" && packages_to_remove+=("$package")
+        package_is_installed "$package" && packages_to_remove+=("$package") || true
     done
 }
 
@@ -131,7 +137,9 @@ Terminal-only installer plan
                         theme-engine targets, theme repositories, Wofi, Dunst, Hyprlock
 EOF
     if "$DESKTOP"; then
+        printf '  desktop package install: %s\n' "${desktop_packages[*]}"
         printf '  desktop opt-in links: %s, %s, %s\n' "$CFG/hypr" "$CFG/waybar" "$CFG/nvim"
+        printf '  desktop scripts: %s/bin/ -> %s/bin/\n' "$CFG" "$CFG"
     fi
 }
 
@@ -149,6 +157,10 @@ manage_packages() {
     ensure_state_dir
     record package-install "${terminal_packages[*]}" 'sudo pacman -S --needed'
     run sudo pacman -S --needed "${terminal_packages[@]}"
+    if "$DESKTOP"; then
+        record package-install "${desktop_packages[*]}" 'sudo pacman -S --needed'
+        run sudo pacman -S --needed "${desktop_packages[@]}"
+    fi
     if ((${#packages_to_remove[@]})); then
         record package-remove "${packages_to_remove[*]}" 'sudo pacman -Rns'
         run sudo pacman -Rns "${packages_to_remove[@]}"
@@ -173,13 +185,28 @@ manage_terminal_files() {
     link "$REPO/zsh/.zshrc" "$HOME/.zshrc"
     install_file "$REPO/kitty/kitty.conf" "$CFG/kitty/kitty.conf" 0644
     install_file "$REPO/starship/starship.toml" "$CFG/starship.toml" 0644
-    install_file "$REPO/bin/shortcuts" "$HOME/.local/bin/shortcuts" 0755
+    local script
+    for script in "$REPO"/bin/*; do
+        [ -f "$script" ] && [ -x "$script" ] || continue
+        install_file "$script" "$HOME/.local/bin/$(basename "$script")" 0755
+    done
+}
+
+install_config_bin_scripts() {
+    mkdir -p "$CFG/bin"
+    local script
+    for script in power-menu workspace-switcher; do
+        if [ -f "$REPO/bin/$script" ]; then
+            install_file "$REPO/bin/$script" "$CFG/bin/$script" 0755
+        fi
+    done
 }
 
 manage_desktop_files() {
     link "$REPO/hypr" "$CFG/hypr"
     link "$REPO/waybar" "$CFG/waybar"
     link "$REPO/nvim" "$CFG/nvim"
+    install_config_bin_scripts
 }
 
 while (($#)); do

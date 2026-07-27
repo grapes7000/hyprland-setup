@@ -1,5 +1,6 @@
-generated/
 *.bak-*
 __pycache__/
 *.pyc
 nvim/lua/generated_theme.lua
+hypr/wallpapers/
+hypr/themes/
