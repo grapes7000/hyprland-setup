@@ -251,6 +251,12 @@ manage_desktop_files() {
     fi
     install_file "$REPO/bin/workspace-switcher" "$CFG/bin/workspace-switcher" 0755
     install_file "$REPO/bin/power-menu" "$CFG/bin/power-menu" 0755
+    install_file "$REPO/bin/apply-cursor" "$CFG/bin/apply-cursor" 0755
+    install_file "$REPO/bin/quick-note" "$CFG/bin/quick-note" 0755
+    install_file "$REPO/bin/notification-center" "$CFG/bin/notification-center" 0755
+    install_file "$REPO/bin/session-welcome" "$CFG/bin/session-welcome" 0755
+    install_file "$REPO/bin/generate-keybinds" "$CFG/bin/generate-keybinds" 0755
+    install_file "$REPO/bin/keybind-menu" "$CFG/bin/keybind-menu" 0755
     install_file "$REPO/bin/wofi-singleton" "$HOME/.local/bin/wofi-singleton" 0755
     seed_file "$REPO/fallback/hypr-theme.conf" "$CFG/hypr/generated/theme.conf" 0644
     seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644

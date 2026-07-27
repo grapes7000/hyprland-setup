@@ -8,7 +8,7 @@
   "spacing": 6,
   "modules-left":   ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5", "custom/ws6", "custom/ws7", "custom/ws8", "custom/ws9", "custom/ws10", "custom/window-tracker"],
   "modules-center": ["clock"],
-  "modules-right":  ["custom/vpn", "cpu", "memory", "pulseaudio", "network", "custom/running-apps", "tray"],
+  "modules-right":  ["custom/vpn", "custom/sysstat", "pulseaudio", "network", "custom/notifications", "custom/running-apps", "tray"],
 
   "custom/vpn": {
     "exec": "~/.config/waybar/scripts/vpn.sh",
@@ -116,8 +116,20 @@
     "format": "  {:%a %d %b   %H:%M}",
     "tooltip-format": "<tt>{calendar}</tt>"
   },
-  "cpu":    { "format": "  {usage}%", "interval": 2 },
-  "memory": { "format": "󰍛  {}%" },
+  "custom/sysstat": {
+    "exec": "python3 ~/.config/waybar/scripts/sysstat.py",
+    "return-type": "json",
+    "interval": 4,
+    "on-click": "command -v btop >/dev/null && kitty btop || true"
+  },
+  "custom/notifications": {
+    "exec": "python3 ~/.config/waybar/scripts/notifications.py",
+    "return-type": "json",
+    "interval": 3,
+    "on-click": "~/.config/bin/notification-center",
+    "on-click-middle": "dunstctl history-pop",
+    "on-click-right": "dunstctl set-paused toggle"
+  },
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-muted": "  muted",
