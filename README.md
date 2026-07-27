@@ -31,6 +31,7 @@ hyprland-setup/
 ├── kitty/         Kitty terminal config     [GENERIC — any distro]
 ├── zsh/           Oh My Zsh + plugin config [Arch installer target]
 ├── starship/      Powerlevel10k-style prompt [GENERIC — any shell/distro]
+├── fallback/      safe generated theme seeds for first desktop launch
 ├── bin/           helper scripts (shortcuts, power-menu, wofi-singleton, etc.)
 ├── docs/
 │   ├── TROUBLESHOOTING.md    ← every issue hit + how to fix it (READ THIS)
@@ -55,9 +56,11 @@ cd ~/Projects/setup/hyprland-setup
 The installer is terminal-only by default. It installs and configures Kitty,
 Zsh, packaged `oh-my-zsh-git`, Starship, autosuggestions, syntax highlighting,
 fzf, ripgrep, fd, bat, eza, thefuck, zoxide, direnv, yazi, jq, tldr, and a Nerd
-Font. It replaces only `~/.zshrc`, `~/.config/kitty/kitty.conf`,
-`~/.config/starship.toml`, and `~/.local/bin/shortcuts`; it archives each
-replaced item first and sets Zsh as the login shell after confirmation.
+Font. It manages `~/.zshrc`, `~/.config/kitty/kitty.conf`, and
+`~/.config/starship.toml` only when those exact targets are **not already
+managed by Chezmoi**. Chezmoi-owned targets are reported and left unchanged.
+It always installs `~/.local/bin/shortcuts`, archives each replaced item first,
+and sets Zsh as the login shell after confirmation.
 
 It never writes `~/.bashrc`, Hyprland, Waybar, Neovim, theme-engine targets,
 Wofi, Dunst, or Hyprlock unless you explicitly select desktop linking:
@@ -67,14 +70,16 @@ Wofi, Dunst, or Hyprlock unless you explicitly select desktop linking:
 ```
 
 `--desktop` installs desktop packages (Hyprland, Waybar, Wofi, dunst,
-pavucontrol, rofi-rbw, etc.) and links `~/.config/hypr`, `~/.config/waybar`,
-and `~/.config/nvim`, plus copies helper scripts to `~/.config/bin/`. Neither
-mode clones, installs, configures, or applies a theme engine.
+pavucontrol, rofi-rbw, etc.), links `~/.config/hypr`, `~/.config/waybar`, and
+`~/.config/nvim`, installs the workspace switcher and power menu under
+`~/.config/bin`, and installs `wofi-singleton` under `~/.local/bin` because all
+three Wofi launch paths depend on it. It also seeds safe fallback files at
+`~/.config/hypr/generated/theme.conf` and
+`~/.config/waybar/generated/theme.css` only when those files do not exist.
+This lets Hyprland and Waybar start before the separate theme engine is
+installed; running `theme <name>` replaces the fallback files later.
 
-> **Note:** The themes repo is a prerequisite for the full desktop experience.
-> `hyprland.conf` sources `generated/theme.conf` — the repo ships a gruvbox
-> fallback stub, but to switch themes you need the
-> [`themes`](https://github.com/grapes7000/themes) repo installed separately.
+Neither mode clones, installs, configures, or applies a theme engine.
 
 `--dry-run` prints the exact package, archive, file, and login-shell plan
 without changing anything. `--yes` is the only non-interactive apply path.
