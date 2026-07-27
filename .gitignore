@@ -3,3 +3,4 @@ generated/
 __pycache__/
 *.pyc
 nvim/lua/generated_theme.lua
+hypr/hyprpaper.conf
