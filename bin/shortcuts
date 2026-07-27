@@ -13,8 +13,11 @@ SUPER = Windows key
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Super + Return          Open terminal (kitty)
   Super + Space           App launcher (wofi)
+  Super + B               Password manager (rofi-rbw)
   Super + Shift + ?       Show this shortcuts (opens in pager)
   Super + T               Theme picker (wofi)
+  Super + Shift + W       Workspace switcher (wofi)
+  Super + Shift + P       Power menu (wofi)
   Super + Q               Close focused window
   Super + Shift + E       Exit Hyprland (logout)
   Print / Super + S       Screenshot (copies to clipboard)
@@ -67,6 +70,7 @@ SUPER = Windows key
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   theme                   List all themes (marks active with *)
   theme <name>            Switch theme instantly (hypr + waybar + kitty + starship)
+  theme starship          Regenerate Starship for the active theme
   theme --list            Bare list of theme names (for scripting)
   theme-new <name>        Create new theme (scaffold from catppuccin_mocha)
   theme-new <name> --from nord  Create from a different base
@@ -74,7 +78,9 @@ SUPER = Windows key
   theme-menu              Interactive wofi picker (also Super+T)
   wallgen                 Regenerate all wallpapers from theme colors
   wallgen <name>          Regenerate just one wallpaper
-  shortcuts                    Show this reference (you're reading it!)
+  wallgen <name> --set    Regenerate one wallpaper and set it live
+  starship-config         Open the Starship prompt dashboard
+  shortcuts               Show this reference (you're reading it!)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  EXAMPLES

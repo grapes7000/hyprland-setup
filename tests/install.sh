@@ -51,4 +51,12 @@ rg -F "$home/.config/starship.toml" "$state_dir/manifest.tsv" >/dev/null
 rg -F "$home/.config/fish" "$state_dir/manifest.tsv" >/dev/null
 rg -F -- '-Rns cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k' "$root/log" >/dev/null
 rg -F -- '-s /usr/bin/zsh' "$root/log" >/dev/null
+
+if ! env HOME="$home" USER=tester SHELL=/usr/bin/zsh XDG_STATE_HOME="$home/.state" PATH="$mock:$PATH" INSTALL_TEST_LOG="$root/log" \
+    "$repo/install.sh" --yes --desktop > "$root/desktop-apply" 2>&1; then
+    sed -n '1,160p' "$root/desktop-apply" >&2
+    exit 1
+fi
+cmp "$repo/bin/workspace-switcher" "$home/.config/bin/workspace-switcher"
+cmp "$repo/bin/power-menu" "$home/.config/bin/power-menu"
 printf 'installer tests passed\n'
