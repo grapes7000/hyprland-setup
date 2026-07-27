@@ -1,44 +1,51 @@
-# Managed by hyprland-setup. Personal additions belong in ~/.zshrc.local.
+# ~/.zshrc — managed by Chezmoi.
+# Oh My Zsh manages plugins; Starship draws the prompt.
 
-export ZSH="/usr/share/oh-my-zsh"
-export PATH="$HOME/.local/bin:$PATH"
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-
-# Starship replaces Powerlevel10k. Keep Oh My Zsh theme-free so it cannot
-# overwrite the prompt after Starship initializes.
+export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
+[ -r "$ZSH/oh-my-zsh.sh" ] || export ZSH="/usr/share/oh-my-zsh"
 ZSH_THEME=""
-plugins=(git sudo colored-man-pages command-not-found)
+zstyle ':omz:update' mode auto
+zstyle ':omz:update' frequency 13
 
-source "$ZSH/oh-my-zsh.sh"
+plugins=(
+  git
+  sudo
+  fzf
+  zoxide
+  command-not-found
+  colored-man-pages
+  extract
+  history-substring-search
+)
 
-export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+[ -r "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
+[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-if [ -r /usr/share/fzf/key-bindings.zsh ]; then
-    source /usr/share/fzf/key-bindings.zsh
-fi
-if [ -r /usr/share/fzf/completion.zsh ]; then
-    source /usr/share/fzf/completion.zsh
-fi
+HISTSIZE=50000
+SAVEHIST=50000
+HISTFILE="$HOME/.zsh_history"
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt AUTO_CD
+setopt CORRECT
+setopt INTERACTIVE_COMMENTS
 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+export EDITOR="${EDITOR:-nvim}"
+export VISUAL="$EDITOR"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$(npm bin -g):$PATH"
 
-eval "$(zoxide init zsh)"
-eval "$(direnv hook zsh)"
-eval "$(thefuck --alias)"
-eval "$(starship init zsh)"
 
-alias ls='eza --icons --group-directories-first'
-alias ll='eza -lah --icons --group-directories-first --git'
-alias la='eza -a --icons --group-directories-first'
-alias cat='bat'
-alias find='fd'
+bindkey '^[[A' history-substring-search-up 2>/dev/null || true
+bindkey '^[[B' history-substring-search-down 2>/dev/null || true
 
-if [ -f "$HOME/.zshrc.local" ]; then
-    source "$HOME/.zshrc.local"
-fi
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border=rounded --info=inline"
+command -v fd >/dev/null 2>&1 && export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude .git"
 
-# Keep syntax highlighting last: it wraps the line editor used by the plugins above.
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+[ -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

@@ -32,7 +32,7 @@ hyprland-setup/
 ├── zsh/           Oh My Zsh + plugin config [Arch installer target]
 ├── starship/      Powerlevel10k-style prompt [GENERIC — any shell/distro]
 ├── fallback/      safe generated theme seeds for first desktop launch
-├── bin/           shortcuts (keybind cheat-sheet command)
+├── bin/           helper scripts (shortcuts, power-menu, wofi-singleton, etc.)
 ├── docs/
 │   ├── TROUBLESHOOTING.md    ← every issue hit + how to fix it (READ THIS)
 │   └── VM-GUEST-SETUP.md     ← SPICE, virgl, resolution, SSH specifics
@@ -47,8 +47,8 @@ works on any distro, no Hyprland required. See [Reusable parts](#reusable-parts)
 ## Quick start
 
 ```sh
-git clone https://github.com/grapes7000/hyprland-setup.git ~/hyprland-setup
-cd ~/hyprland-setup
+git clone https://github.com/grapes7000/hyprland-setup.git ~/Projects/setup/hyprland-setup
+cd ~/Projects/setup/hyprland-setup
 ./install.sh --dry-run
 ./install.sh
 ```
@@ -69,7 +69,8 @@ Wofi, Dunst, or Hyprlock unless you explicitly select desktop linking:
 ./install.sh --desktop
 ```
 
-`--desktop` links `~/.config/hypr`, `~/.config/waybar`, and
+`--desktop` installs desktop packages (Hyprland, Waybar, Wofi, dunst,
+pavucontrol, rofi-rbw, etc.), links `~/.config/hypr`, `~/.config/waybar`, and
 `~/.config/nvim`, installs the workspace switcher and power menu under
 `~/.config/bin`, and installs `wofi-singleton` under `~/.local/bin` because all
 three Wofi launch paths depend on it. It also seeds safe fallback files at
@@ -93,11 +94,12 @@ listed in the dry-run/apply summary and must be reversed explicitly.
 
 The installer currently supports Arch-based distributions.
 
-Install the desktop packages it needs (Arch):
+The `--desktop` flag now installs these automatically, but for reference:
 ```sh
 sudo pacman -S --needed hyprland waybar wofi hyprpaper hyprlock hypridle \
   xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland \
-  grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
+  grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow \
+  dunst pavucontrol rofi-rbw wlr-randr neovim
 ```
 
 Then log out and pick **Hyprland** at your display manager, or run `Hyprland`
@@ -120,7 +122,10 @@ alone.
 |---|---|
 | `Super + Return` | Terminal (kitty) |
 | `Super + Space` | App launcher (wofi) |
+| `Super + B` | Password manager (rofi-rbw) |
 | `Super + T` | Theme picker |
+| `Super + Shift + W` | Workspace switcher (wofi) |
+| `Super + Shift + P` | Power menu (wofi) |
 | `Super + Shift + ?` | This cheat sheet |
 | `Super + Q` | Close window |
 | `Super + H/J/K/L` | Focus (vim directions) |

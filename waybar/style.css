@@ -19,7 +19,7 @@ window#waybar {
 #custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
 #custom-ws6, #custom-ws7, #custom-ws8, #custom-ws9, #custom-ws10,
 #clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
-  background: alpha(@bg, 0.55);
+  background: transparent;
   padding: 2px 12px;
   margin: 2px 0;
   border-radius: 4px;
@@ -52,7 +52,7 @@ window#waybar {
 #network { color: @text_dim; }
 #pulseaudio.muted { color: @urgent; }
 
-#custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 4px; background: alpha(@bg, 0.55); }
+#custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 4px; background: transparent; }
 #custom-vpn.protected { color: @accent; }
 #custom-vpn.exposed { color: @urgent; }
 

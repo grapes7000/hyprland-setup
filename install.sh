@@ -12,7 +12,13 @@ STATE_DIR=""
 terminal_packages=(
     zsh kitty starship oh-my-zsh-git zsh-autosuggestions zsh-syntax-highlighting
     fzf ripgrep fd bat eza thefuck zoxide direnv yazi jq tldr
-    git curl unzip ttf-jetbrains-mono-nerd
+    git curl unzip ttf-jetbrains-mono-nerd neovim
+)
+desktop_packages=(
+    hyprland waybar wofi hyprpaper hyprlock hypridle
+    xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland
+    grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
+    dunst pavucontrol rofi-rbw wlr-randr
 )
 legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
 
@@ -141,7 +147,7 @@ preflight() {
     packages_to_remove=()
     local package
     for package in "${legacy_packages[@]}"; do
-        package_is_installed "$package" && packages_to_remove+=("$package")
+        package_is_installed "$package" && packages_to_remove+=("$package") || true
     done
     return 0
 }
@@ -160,6 +166,7 @@ Terminal-only installer plan
                         theme-engine targets, theme repositories, Wofi, Dunst, Hyprlock
 EOF_PLAN
     if "$DESKTOP"; then
+        printf '  desktop package install: %s\n' "${desktop_packages[*]}"
         printf '  desktop opt-in links: %s, %s, %s\n' "$CFG/hypr" "$CFG/waybar" "$CFG/nvim"
         printf '  desktop helpers: %s, %s, %s\n' \
             "$CFG/bin/workspace-switcher" "$CFG/bin/power-menu" "$HOME/.local/bin/wofi-singleton"
@@ -182,6 +189,10 @@ manage_packages() {
     ensure_state_dir
     record package-install "${terminal_packages[*]}" 'sudo pacman -S --needed'
     run sudo pacman -S --needed "${terminal_packages[@]}"
+    if "$DESKTOP"; then
+        record package-install "${desktop_packages[*]}" 'sudo pacman -S --needed'
+        run sudo pacman -S --needed "${desktop_packages[@]}"
+    fi
     if ((${#packages_to_remove[@]})); then
         record package-remove "${packages_to_remove[*]}" 'sudo pacman -Rns'
         run sudo pacman -Rns "${packages_to_remove[@]}"
