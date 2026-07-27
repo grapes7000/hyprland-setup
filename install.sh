@@ -22,7 +22,8 @@ Usage: ./install.sh [--dry-run] [--yes] [--desktop]
 
 Install the managed terminal profile. By default this only owns Kitty,
 Starship, Zsh, ~/.local/bin/shortcuts, and the legacy Fish/Powerlevel10k
-archives. --desktop additionally links Hyprland, Waybar, and Neovim.
+archives. --desktop additionally links Hyprland, Waybar, and Neovim, and
+installs the workspace-switcher and power-menu helpers used by Hyprland.
 
 --dry-run  Print the complete plan without writing or running package commands.
 --yes      Apply without the interactive confirmation.
@@ -180,6 +181,8 @@ manage_desktop_files() {
     link "$REPO/hypr" "$CFG/hypr"
     link "$REPO/waybar" "$CFG/waybar"
     link "$REPO/nvim" "$CFG/nvim"
+    install_file "$REPO/bin/workspace-switcher" "$CFG/bin/workspace-switcher" 0755
+    install_file "$REPO/bin/power-menu" "$CFG/bin/power-menu" 0755
 }
 
 while (($#)); do
