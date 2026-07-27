@@ -19,10 +19,10 @@ window#waybar {
 #custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
 #custom-ws6, #custom-ws7, #custom-ws8, #custom-ws9, #custom-ws10,
 #clock, #cpu, #memory, #pulseaudio, #network, #tray, #custom-window-tracker {
-  background: alpha(@bg_alt, 0.85);
+  background: alpha(@bg, 0.55);
   padding: 2px 12px;
   margin: 2px 0;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 #custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
@@ -40,9 +40,9 @@ window#waybar {
 #custom-ws1.active, #custom-ws2.active, #custom-ws3.active, #custom-ws4.active, #custom-ws5.active,
 #custom-ws6.active, #custom-ws7.active, #custom-ws8.active, #custom-ws9.active, #custom-ws10.active {
   color: @accent;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: bold;
-  padding: 2px 8px;
+  padding: 2px 12px;
 }
 
 #clock  { color: @accent; }
@@ -52,7 +52,7 @@ window#waybar {
 #network { color: @text_dim; }
 #pulseaudio.muted { color: @urgent; }
 
-#custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 10px; background: alpha(@bg_alt, 0.85); }
+#custom-vpn { padding: 2px 12px; margin: 2px 0; border-radius: 4px; background: alpha(@bg, 0.55); }
 #custom-vpn.protected { color: @accent; }
 #custom-vpn.exposed { color: @urgent; }
 
