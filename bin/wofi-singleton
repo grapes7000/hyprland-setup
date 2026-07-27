@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/wofi-singleton.lock"
+exec 9>"$lock_file"
+flock -n 9 || exit 0
+pgrep -x wofi >/dev/null && exit 0
+exec wofi "$@"

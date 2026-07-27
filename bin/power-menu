@@ -3,7 +3,7 @@
 
 options="󰤄 Lock\n󰍐 Logout\n 󰑙 Reboot\n⏹ Shutdown"
 
-selected=$(echo -e "$options" | wofi --dmenu -p "Power:" 2>/dev/null)
+selected=$(echo -e "$options" | ~/.local/bin/wofi-singleton --dmenu -p "Power:" 2>/dev/null)
 
 case "$selected" in
     "󰤄 Lock")
