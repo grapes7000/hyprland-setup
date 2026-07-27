@@ -22,71 +22,81 @@
     "exec": "~/.config/waybar/scripts/workspaces.sh 1",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 1"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 1"
   },
   "custom/ws2": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 2",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 2"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 2"
   },
   "custom/ws3": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 3",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 3"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 3"
   },
   "custom/ws4": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 4",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 4"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 4"
   },
   "custom/ws5": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 5",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 5"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 5"
   },
   "custom/ws6": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 6",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 6"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 6"
   },
   "custom/ws7": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 7",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 7"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 7"
   },
   "custom/ws8": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 8",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 8"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 8"
   },
   "custom/ws9": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 9",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 9"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 9"
   },
   "custom/ws10": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 10",
     "return-type": "json",
     "interval": 1,
+    "signal": 8,
     "escape": false,
-    "on-click": "hyprctl dispatch workspace 10"
+    "on-click": "~/.config/waybar/scripts/ws-click.sh 10"
   },
 
   "custom/window-tracker": {

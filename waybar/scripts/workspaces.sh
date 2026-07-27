@@ -107,14 +107,14 @@ render() {
     fi
 
     if [ "$WORKSPACE_ID" = "$active" ]; then
-        text="<span foreground=\"$accent\"><b>$icon $label</b></span>"
+        text="<span foreground=\"$accent\"><b>$icon  $label</b></span>"
         state="$state active"
     else
         text="<span foreground=\"$color\">$icon</span>"
         state="$state inactive"
     fi
 
-    jq -cn --arg text "$text" --arg tooltip "$tooltip" --arg class "$state" '{text: $text, tooltip: $tooltip, class: $class}'
+    jq -cn --arg text "$text" --arg tooltip "$tooltip" --arg class "$state" '{text: $text, tooltip: $tooltip, class: ($class | split(" "))}'
 }
 
 render
