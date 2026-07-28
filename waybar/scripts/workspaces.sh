@@ -12,7 +12,14 @@ case "$WORKSPACE_ID" in
     *) printf '%s\n' 'workspace ID must be an integer from 1 to 10' >&2; exit 2 ;;
 esac
 
+WS_JSON="${WS_JSON:-$HOME/.config/hypr/workspaces.json}"
+
 workspace_label() {
+    if [ -r "$WS_JSON" ]; then
+        local name
+        name=$(jq -r --argjson id "$1" '.[] | select(.id == $id) | .name // empty' "$WS_JSON" 2>/dev/null)
+        [ -n "$name" ] && { printf '%s' "$name"; return; }
+    fi
     case "$1" in
         1) printf 'web' ;; 2) printf 'term' ;; 3) printf 'code' ;;
         4) printf 'files' ;; 5) printf 'media' ;; 6) printf 'chat' ;;
