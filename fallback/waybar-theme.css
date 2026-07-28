@@ -10,3 +10,19 @@
 @define-color accent2 #89b4fa;
 @define-color urgent #f38ba8;
 @define-color focus #cba6f7;
+
+/* Semantic roles (same derivation as resolve_semantic_roles in bin/theme) */
+@define-color surface_0 #1e1e2e;
+@define-color surface_1 #181825;
+@define-color surface_2 #2a2a3d;
+@define-color overlay #1e1e2e;
+@define-color hover #2e2748;
+@define-color selected #cba6f7;
+@define-color border_subtle #45475a;
+@define-color border_strong #cba6f7;
+@define-color success #a6e3a1;
+@define-color warning #f9e2af;
+@define-color info #89b4fa;
+@define-color disabled #a6adc8;
+@define-color on_accent #1e1e2e;
+@define-color on_urgent #1e1e2e;
