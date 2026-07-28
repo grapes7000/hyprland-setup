@@ -18,7 +18,7 @@ scripts.
 **Desktop mode** (`--desktop`) additionally sets up:
 - **Hyprland** compositor with a modular config (keybinds, window rules, animations)
 - **Waybar** top bar with workspace indicators, system stats, clock, audio, network
-- **Neovim** config with treesitter and colorizer
+- **Neovim** config with Tree-sitter and colorizer
 - Helper scripts: power menu, workspace switcher, keybind cheat sheet, app launcher
 - Wofi launcher, dunst notifications, hyprlock screen lock, hypridle
 
