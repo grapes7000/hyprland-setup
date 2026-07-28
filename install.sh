@@ -2,6 +2,14 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -z "${BASH_SOURCE[0]}" ] || [ ! -f "${BASH_SOURCE[0]}" ]; then
+    printf 'Downloading hyprland-setup...\n'
+    _tmpdir="$(mktemp -d)"
+    trap 'rm -rf "$_tmpdir"' EXIT
+    git clone --depth 1 https://github.com/grapes7000/hyprland-setup.git "$_tmpdir/hyprland-setup"
+    exec bash "$_tmpdir/hyprland-setup/install.sh" "$@"
+fi
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
 STATE_ROOT="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland-setup"
 DRY_RUN=false
@@ -471,13 +479,29 @@ interactive_mode() {
 
 ask_desktop() {
     if ! "$DESKTOP" && interactive_mode; then
-        printf 'Install terminal tools only, or include the full desktop (Hyprland, Waybar, etc.)?\n'
-        printf '  [t] terminal only (default)\n'
-        printf '  [d] terminal + desktop\n'
+        local default_desktop=false
+        if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || command -v hyprctl >/dev/null 2>&1 \
+           || command -v Hyprland >/dev/null 2>&1; then
+            default_desktop=true
+        fi
+
+        if "$default_desktop"; then
+            printf 'Hyprland detected. Install terminal + desktop? (or terminal only)\n'
+            printf '  [d] terminal + desktop (default)\n'
+            printf '  [t] terminal only\n'
+        else
+            printf 'Install terminal tools only, or include the full desktop (Hyprland, Waybar, etc.)?\n'
+            printf '  [t] terminal only (default)\n'
+            printf '  [d] terminal + desktop\n'
+        fi
         printf '  choice: '
         local answer
         read -r answer
-        [[ "$answer" =~ ^[Dd] ]] && DESKTOP=true
+        if "$default_desktop"; then
+            [[ "$answer" =~ ^[Tt] ]] || DESKTOP=true
+        else
+            [[ "$answer" =~ ^[Dd] ]] && DESKTOP=true
+        fi
     fi
 }
 
