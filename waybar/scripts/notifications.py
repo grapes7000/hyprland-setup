@@ -8,7 +8,17 @@ import subprocess
 import sys
 
 
+_ALLOWED_ARGS = frozenset({
+    "is-paused", "count", "history", "waiting", "displayed",
+    "close", "close-all", "action", "history-pop", "history-clear",
+    "set-paused", "true", "false", "toggle",
+})
+
+
 def dunstctl(*args):
+    for arg in args:
+        if arg not in _ALLOWED_ARGS:
+            return None
     try:
         return subprocess.check_output(
             ["dunstctl"] + list(args), text=True, timeout=2

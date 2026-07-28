@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import tempfile
+import types
 import pytest
 
 SCRIPT_PATH = os.path.join(
@@ -45,12 +46,47 @@ class TestReadMemory:
 
 
 class TestReadDisk:
-    def test_reads_root_disk(self):
+    def _make_statvfs_result(self, f_blocks, f_frsize, f_bavail):
+        result = types.SimpleNamespace()
+        result.f_blocks = f_blocks
+        result.f_frsize = f_frsize
+        result.f_bavail = f_bavail
+        result.f_bsize = f_frsize
+        result.f_bfree = f_bavail
+        result.f_files = 1000000
+        result.f_ffree = 500000
+        result.f_favail = 500000
+        result.f_flag = 0
+        result.f_namemax = 255
+        return result
+
+    def test_reads_disk_deterministic(self, monkeypatch):
+        fake = self._make_statvfs_result(
+            f_blocks=1000000, f_frsize=4096, f_bavail=400000
+        )
+        monkeypatch.setattr(os, "statvfs", lambda path: fake)
         result = sysstat.read_disk()
         assert result is not None
         pct, used, total = result
-        assert 0 <= pct <= 100
-        assert total > 0
+        assert pct == 60
+        total_bytes = 1000000 * 4096
+        free_bytes = 400000 * 4096
+        used_bytes = total_bytes - free_bytes
+        assert used == round(used_bytes / (1024 ** 3), 1)
+        assert total == round(total_bytes / (1024 ** 3), 1)
+
+    def test_zero_total_returns_none(self, monkeypatch):
+        fake = self._make_statvfs_result(f_blocks=0, f_frsize=4096, f_bavail=0)
+        monkeypatch.setattr(os, "statvfs", lambda path: fake)
+        result = sysstat.read_disk()
+        assert result is None
+
+    def test_statvfs_oserror_returns_none(self, monkeypatch):
+        def raise_oserror(path):
+            raise OSError("no such device")
+        monkeypatch.setattr(os, "statvfs", raise_oserror)
+        result = sysstat.read_disk()
+        assert result is None
 
 
 class TestReadUptime:
@@ -63,7 +99,6 @@ class TestReadUptime:
 class TestReadTemp:
     def test_handles_missing_temp(self):
         result = sysstat.read_temp()
-        # May or may not be available; should not crash
         assert result is None or isinstance(result, int)
 
 
@@ -77,3 +112,41 @@ class TestMainOutput:
         assert "class" in data
         assert isinstance(data["class"], list)
         assert len(data["class"]) > 0
+
+    def test_warning_class_when_metric_high(self, monkeypatch, capsys):
+        monkeypatch.setattr(sysstat, "read_cpu", lambda: 80)
+        monkeypatch.setattr(sysstat, "read_memory", lambda: (50, 8.0, 16.0))
+        monkeypatch.setattr(sysstat, "read_disk", lambda: (50, 100.0, 200.0))
+        monkeypatch.setattr(sysstat, "read_uptime", lambda: "5h 30m")
+        monkeypatch.setattr(sysstat, "read_load", lambda: "1.5")
+        monkeypatch.setattr(sysstat, "read_temp", lambda: 55)
+        sysstat.main()
+        data = json.loads(capsys.readouterr().out)
+        assert "warning" in data["class"]
+        assert "critical" not in data["class"]
+
+    def test_critical_class_when_metric_very_high(self, monkeypatch, capsys):
+        monkeypatch.setattr(sysstat, "read_cpu", lambda: 95)
+        monkeypatch.setattr(sysstat, "read_memory", lambda: (95, 15.2, 16.0))
+        monkeypatch.setattr(sysstat, "read_disk", lambda: (50, 100.0, 200.0))
+        monkeypatch.setattr(sysstat, "read_uptime", lambda: "2h 10m")
+        monkeypatch.setattr(sysstat, "read_load", lambda: "4.0")
+        monkeypatch.setattr(sysstat, "read_temp", lambda: 80)
+        sysstat.main()
+        data = json.loads(capsys.readouterr().out)
+        assert "critical" in data["class"]
+
+    def test_fallback_text_and_normal_class_when_all_metrics_unavailable(
+        self, monkeypatch, capsys
+    ):
+        monkeypatch.setattr(sysstat, "read_cpu", lambda: None)
+        monkeypatch.setattr(sysstat, "read_memory", lambda: None)
+        monkeypatch.setattr(sysstat, "read_disk", lambda: None)
+        monkeypatch.setattr(sysstat, "read_uptime", lambda: None)
+        monkeypatch.setattr(sysstat, "read_load", lambda: None)
+        monkeypatch.setattr(sysstat, "read_temp", lambda: None)
+        sysstat.main()
+        data = json.loads(capsys.readouterr().out)
+        assert data["text"] == "…"
+        assert data["class"] == ["normal"]
+        assert data["tooltip"] == ""
