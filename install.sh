@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-if [ -z "${BASH_SOURCE[0]}" ] || [ ! -f "${BASH_SOURCE[0]}" ]; then
+_src="${BASH_SOURCE[0]-}"
+if [ -z "$_src" ] || [ ! -f "$_src" ]; then
     printf 'Downloading hyprland-setup...\n'
     _tmpdir="$(mktemp -d)"
     trap 'rm -rf "$_tmpdir"' EXIT
     git clone --depth 1 https://github.com/grapes7000/hyprland-setup.git "$_tmpdir/hyprland-setup"
-    exec bash "$_tmpdir/hyprland-setup/install.sh" "$@"
+    bash "$_tmpdir/hyprland-setup/install.sh" "$@"
+    exit $?
 fi
+
+REPO="$(cd "$(dirname "$_src")" && pwd)"
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
 STATE_ROOT="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland-setup"
 DRY_RUN=false
