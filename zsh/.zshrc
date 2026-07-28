@@ -19,7 +19,10 @@ plugins=(
 )
 
 [ -r "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
-[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+for _p in /usr/share/zsh/plugins/zsh-autosuggestions /usr/share/zsh-autosuggestions /usr/share/oh-my-zsh/custom/plugins/zsh-autosuggestions; do
+    [ -r "$_p/zsh-autosuggestions.zsh" ] && source "$_p/zsh-autosuggestions.zsh" && break
+done
+unset _p
 
 HISTSIZE=50000
 SAVEHIST=50000
@@ -36,7 +39,6 @@ setopt INTERACTIVE_COMMENTS
 export EDITOR="${EDITOR:-nvim}"
 export VISUAL="$EDITOR"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$(npm bin -g):$PATH"
 
 
 bindkey '^[[A' history-substring-search-up 2>/dev/null || true
@@ -48,4 +50,9 @@ command -v fd >/dev/null 2>&1 && export FZF_DEFAULT_COMMAND="fd --type f --hidde
 
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
-[ -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -r "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+for _p in /usr/share/zsh/plugins/zsh-syntax-highlighting /usr/share/zsh-syntax-highlighting /usr/share/oh-my-zsh/custom/plugins/zsh-syntax-highlighting; do
+    [ -r "$_p/zsh-syntax-highlighting.zsh" ] && source "$_p/zsh-syntax-highlighting.zsh" && break
+done
+unset _p
