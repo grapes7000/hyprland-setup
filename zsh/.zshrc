@@ -56,3 +56,8 @@ for _p in /usr/share/zsh/plugins/zsh-syntax-highlighting /usr/share/zsh-syntax-h
     [ -r "$_p/zsh-syntax-highlighting.zsh" ] && source "$_p/zsh-syntax-highlighting.zsh" && break
 done
 unset _p
+
+# Pretty directory listings with Nerd Font icons
+alias ls='eza --icons=always --group-directories-first'
+alias ll='eza -la --icons=always --group-directories-first --git'
+alias tree='eza --tree --icons=always'
