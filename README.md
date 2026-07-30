@@ -18,6 +18,7 @@ scripts.
 **Desktop mode** (`--desktop`) additionally sets up:
 - **Hyprland** compositor with a modular config (keybinds, window rules, animations)
 - **Waybar** top bar with workspace indicators, system stats, clock, audio, network
+- **Eww homepage** with a clock, welcome panel, and discoverable shortcuts
 - **Neovim** config with Tree-sitter and colorizer
 - Helper scripts: power menu, workspace switcher, keybind cheat sheet, app launcher
 - Wofi launcher, dunst notifications, hyprlock screen lock, hypridle
@@ -199,6 +200,7 @@ The installer **only** manages these paths:
 | `~/.local/bin/shortcuts` | Copy from repo | terminal |
 | `~/.config/hypr` | Symlink to repo | desktop |
 | `~/.config/waybar` | Symlink to repo | desktop |
+| `~/.config/eww` | Symlink to the bundled homepage | desktop |
 | `~/.config/nvim` | Symlink to repo | desktop |
 | `~/.config/bin/*` | Helper scripts | desktop |
 | `~/.local/bin/wofi-singleton` | Copy from repo | desktop |
@@ -294,6 +296,7 @@ hyprland-setup/
 │   ├── hyprlock.conf         lock screen
 │   └── hypridle.conf         idle timeouts
 ├── waybar/        Top bar config + CSS (portable to other wlroots WMs)
+├── homepage/      Eww homepage config + logged startup launcher
 ├── kitty/         Kitty terminal config (works on any OS)
 ├── zsh/           Zsh profile with Oh My Zsh + Starship
 ├── starship/      Starship prompt config (works with any shell)

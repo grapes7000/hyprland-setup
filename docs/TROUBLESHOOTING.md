@@ -7,6 +7,27 @@ Linux guest running under a CachyOS + qtile (wlroots) host.
 Written so that **future-you can fix these in minutes instead of hours.** Each
 entry is: *symptom → root cause → fix → why*.
 
+## Waybar or homepage is missing
+
+Desktop mode installs and verifies both launchers. Their startup output is kept
+instead of disappearing with the Hyprland session:
+
+```sh
+cat ~/.local/state/hyprland-setup/waybar.log
+cat ~/.local/state/hyprland-setup/homepage.log
+```
+
+Restart either component without logging out:
+
+```sh
+bash ~/.config/waybar/launch.sh
+pkill -x eww
+bash ~/.config/eww/launch.sh
+```
+
+If `eww` is missing, rerun `./install.sh --desktop`. Desktop mode installs its
+GTK build dependencies and builds the pinned Wayland release automatically.
+
 ---
 
 ## Table of Contents
