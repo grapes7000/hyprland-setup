@@ -81,6 +81,12 @@ manual_install_method=(
     [ttf-jetbrains-mono-nerd]=nerdfont
 )
 
+# Arch package name overrides (AUR-only packages need manual install)
+declare -A pkg_arch
+pkg_arch=(
+    [oh-my-zsh-git]=__manual__
+)
+
 # Fedora package name overrides (where different from Arch)
 declare -A pkg_fedora
 pkg_fedora=(
@@ -137,6 +143,7 @@ resolve_packages() {
     for pkg in "${_base_list[@]}"; do
         mapped="$pkg"
         case "$DISTRO" in
+            arch)   [ "${pkg_arch[$pkg]+set}" ]   && mapped="${pkg_arch[$pkg]}" ;;
             fedora) [ "${pkg_fedora[$pkg]+set}" ] && mapped="${pkg_fedora[$pkg]}" ;;
             debian) [ "${pkg_debian[$pkg]+set}" ] && mapped="${pkg_debian[$pkg]}" ;;
         esac
