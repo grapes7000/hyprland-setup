@@ -2,22 +2,42 @@
   "layer": "top",
   "position": "top",
   "height": 34,
-  "margin-top": 6,
+  "margin-top": 10,
   "margin-left": 10,
   "margin-right": 10,
   "spacing": 6,
-  "modules-left":   ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5", "custom/ws6", "custom/ws7", "custom/ws8", "custom/ws9", "custom/ws10", "custom/running-apps", "custom/window-tracker"],
-  "modules-center": ["clock"],
-  "modules-right":  ["custom/vpn", "custom/sysstat", "pulseaudio", "network", "custom/notifications", "tray", "custom/power"],
-
+  "modules-left": [
+    "custom/ws1",
+    "custom/ws2",
+    "custom/ws3",
+    "custom/ws4",
+    "custom/ws5",
+    "custom/ws6",
+    "custom/ws7",
+    "custom/ws8",
+    "custom/ws9",
+    "custom/ws10",
+    "custom/running-apps",
+    "custom/window-tracker"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "custom/vpn",
+    "custom/sysstat",
+    "pulseaudio",
+    "network",
+    "custom/notifications",
+    "tray",
+    "custom/power"
+  ],
   "custom/vpn": {
     "exec": "~/.config/waybar/scripts/vpn.sh",
     "return-type": "json",
     "interval": 5,
     "on-click": "~/.config/waybar/scripts/vpn.sh"
   },
-
-
   "custom/ws1": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 1",
     "return-type": "json",
@@ -98,14 +118,12 @@
     "escape": false,
     "on-click": "~/.config/waybar/scripts/ws-click.sh 10"
   },
-
   "custom/window-tracker": {
     "exec": "~/.config/waybar/scripts/window-tracker.sh",
     "return-type": "text",
     "max-length": 60,
     "on-click": "hyprctl dispatch focuswindow ^0"
   },
-
   "custom/running-apps": {
     "exec": "~/.config/waybar/scripts/running-apps.sh",
     "return-type": "text",
@@ -136,7 +154,13 @@
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-muted": "  muted",
-    "format-icons": { "default": ["", "", ""] },
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        ""
+      ]
+    },
     "on-click": "bash -lc '$HOME/.config/bin/waybar-panel audio waybar-toggle'",
     "on-click-right": "pavucontrol"
   },
@@ -149,11 +173,19 @@
     "tooltip-format-disconnected": "Disconnected",
     "on-click": "bash -lc '$HOME/.config/bin/waybar-panel network waybar-toggle'"
   },
-  "tray": { "spacing": 10 },
+  "tray": {
+    "spacing": 10
+  },
   "custom/power": {
     "format": "󰐥",
     "tooltip": true,
     "tooltip-format": "Power menu",
     "on-click": "~/.config/bin/power-menu"
+  },
+  "battery": {
+    "states": {
+      "warning": 25,
+      "critical": 10
+    }
   }
 }

@@ -29,7 +29,7 @@ terminal_packages_base=(
     git curl unzip ttf-jetbrains-mono-nerd neovim
 )
 desktop_packages_base=(
-    hyprland waybar wofi hyprpaper hyprlock hypridle
+    hyprland waybar eww wofi hyprpaper hyprlock hypridle
     xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland
     grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
     dunst pavucontrol rofi-rbw wlr-randr
@@ -630,6 +630,7 @@ manage_desktop_files() {
     printf '\n[3/5] Configuring desktop (hyprland, waybar, nvim)...\n'
     link "$REPO/hypr" "$CFG/hypr"
     link "$REPO/waybar" "$CFG/waybar"
+    link "$REPO/eww/waybar-panels" "$CFG/eww/waybar-panels"
     link "$REPO/nvim" "$CFG/nvim"
     if "$DRY_RUN"; then
         printf '  would generate %s (expand __HOME__ -> %s)\n' "$REPO/hypr/hyprpaper.conf" "$HOME"
@@ -646,6 +647,7 @@ manage_desktop_files() {
     install_file "$REPO/bin/generate-keybinds" "$CFG/bin/generate-keybinds" 0755
     install_file "$REPO/bin/keybind-menu" "$CFG/bin/keybind-menu" 0755
     install_file "$REPO/bin/wofi-singleton" "$HOME/.local/bin/wofi-singleton" 0755
+    install_file "$REPO/bin/waybar-panel" "$CFG/bin/waybar-panel" 0755
     seed_file "$REPO/fallback/hypr-theme.conf" "$CFG/hypr/generated/theme.conf" 0644
     seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644
 }
