@@ -131,7 +131,7 @@ def main():
     classes = []
 
     if cpu is not None:
-        text_parts.append(f" {cpu}%")
+        text_parts.append(f"󰻠 {cpu}%")
         tooltip_parts.append(f"CPU {cpu}%")
         if cpu >= CRIT_CPU:
             classes.append("critical")
@@ -139,7 +139,7 @@ def main():
             classes.append("warning")
     if mem is not None:
         pct, used, total = mem
-        text_parts.append(f"󰍛 {pct}%")
+        text_parts.append(f"󰘚 {pct}%")
         tooltip_parts.append(f"Memory {used}/{total} GiB")
         if pct >= CRIT_MEM:
             classes.append("critical")

@@ -1,0 +1,31 @@
+@import "generated/theme.scss";
+
+* { all: unset; font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace; }
+.system-panel { background-color: $bg; border: 1px solid $border-subtle; border-radius: 14px; padding: 18px; }
+.panel { background-color: $bg; border: 1px solid $border-subtle; border-radius: 14px; padding: 18px; }
+.panel-header { margin-bottom: 14px; }
+.panel-title { color: $text; font-size: 17px; font-weight: 800; }
+.panel-line { color: $text-dim; font-size: 12px; margin-top: 8px; }
+.clock-time { color: $accent; font-size: 34px; font-weight: 800; }
+.calendar { color: $text; font-size: 13px; margin: 12px 0; }
+.app-row { color: $text; background-color: $surface-0; border-radius: 7px; padding: 7px; margin-top: 5px; }
+.app-row:hover, .app-row.active { background-color: $selected; color: $bg; }
+.resource-grid { min-width: 474px; margin-bottom: 10px; }
+.resource-card { background-color: $surface-0; border: 1px solid $border-subtle; border-radius: 10px; padding: 12px; min-width: 210px; margin-right: 10px; }
+.resource-icon { color: $accent; font-size: 17px; margin-right: 7px; }
+.resource-label, .resource-detail { color: $text-dim; font-size: 11px; }
+.resource-value { color: $text; font-size: 16px; font-weight: 800; }
+.resource-progress { color: $accent; background-color: $bg-alt; min-height: 5px; margin: 10px 0 7px; }
+.resource-card.warning .resource-progress { color: $warning; }
+.resource-card.critical .resource-progress { color: $urgent; }
+.process-section { background-color: $bg-alt; border: 1px solid $border-subtle; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+.section-title { color: $accent2; font-size: 11px; font-weight: 800; margin-bottom: 6px; }
+.process-row { min-height: 23px; }
+.process-name { color: $text; font-size: 12px; }
+.process-value { color: $text-dim; font-size: 11px; margin-left: 10px; }
+.panel-actions { margin-top: 2px; }
+.panel-button { color: $text; background-color: $surface-1; border: 1px solid $border-subtle; border-radius: 8px; padding: 8px 10px; margin-right: 8px; font-size: 12px; }
+.panel-button label { color: $text; }
+.panel-button:hover { color: $bg; background-color: $accent; border-color: $accent; }
+.panel-button:hover label { color: $bg; }
+.close-button:hover { background-color: $urgent; border-color: $urgent; }
