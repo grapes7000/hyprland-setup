@@ -1,0 +1,35 @@
+* {
+  all: unset;
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+}
+
+.homepage-card {
+  padding: 34px;
+  border-radius: 24px;
+  background-color: rgba(20, 22, 32, 0.90);
+  border: 1px solid rgba(137, 180, 250, 0.55);
+  color: #cdd6f4;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+.eyebrow { color: #89b4fa; font-size: 13px; letter-spacing: 2px; }
+.clock { color: #f5c2e7; font-size: 72px; font-weight: 700; }
+.date { color: #bac2de; font-size: 18px; }
+.host { color: #a6adc8; font-size: 14px; }
+.divider { min-height: 1px; background-color: rgba(137, 180, 250, 0.28); }
+.section-title { color: #cba6f7; font-size: 16px; font-weight: 700; }
+
+.shortcut {
+  padding: 13px 16px;
+  border-radius: 14px;
+  background-color: rgba(49, 50, 68, 0.88);
+  border: 1px solid rgba(88, 91, 112, 0.7);
+}
+.shortcut:hover {
+  background-color: rgba(69, 71, 90, 0.96);
+  border-color: #89b4fa;
+}
+.shortcut-icon { color: #a6e3a1; font-size: 23px; }
+.shortcut-title { color: #cdd6f4; font-size: 15px; font-weight: 700; }
+.shortcut-detail { color: #a6adc8; font-size: 12px; }
+.hint { color: #7f849c; font-size: 12px; margin-top: 8px; }
