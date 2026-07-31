@@ -33,6 +33,8 @@ desktop_packages_base=(
     xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland
     grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
     dunst pavucontrol rofi-rbw wlr-randr cava
+    gtk3 gtk-layer-shell libdbusmenu-gtk3 rust cargo gcc pkgconf
+)
 )
 legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
 
@@ -79,12 +81,14 @@ declare -A manual_install_method
 manual_install_method=(
     [oh-my-zsh-git]=omz
     [ttf-jetbrains-mono-nerd]=nerdfont
+    [eww]=eww
 )
 
 # Arch package name overrides (AUR-only packages need manual install)
 declare -A pkg_arch
 pkg_arch=(
     [oh-my-zsh-git]=__manual__
+    [eww]=__manual__
 )
 
 # Fedora package name overrides (where different from Arch)
@@ -99,6 +103,11 @@ pkg_fedora=(
     [python-pillow]=python3-pillow
     [rofi-rbw]=__skip__
     [wlr-randr]=__skip__
+    [eww]=__manual__
+    [gtk3]=gtk3-devel
+    [gtk-layer-shell]=gtk-layer-shell-devel
+    [libdbusmenu-gtk3]=libdbusmenu-gtk3-devel
+    [pkgconf]=pkgconf-pkg-config
 )
 
 # Debian/Ubuntu package name overrides
@@ -122,6 +131,13 @@ pkg_debian=(
     [xdg-desktop-portal-hyprland]=__manual_desktop__
     [rofi-rbw]=__skip__
     [wlr-randr]=__skip__
+    [eww]=__manual__
+    [gtk3]=libgtk-3-dev
+    [gtk-layer-shell]=libgtk-layer-shell-dev
+    [libdbusmenu-gtk3]=libdbusmenu-gtk3-dev
+    [rust]=rustc
+    [gcc]=build-essential
+    [pkgconf]=pkg-config
 )
 
 # Resolve a base package list to distro-specific names.
@@ -251,6 +267,33 @@ install_starship() {
     run sh -c 'curl -sS https://starship.rs/install.sh | sh -s -- -y'
 }
 
+install_eww() {
+    if command -v eww >/dev/null 2>&1 || [ -x "$HOME/.local/bin/eww" ]; then
+        printf '  unchanged eww (already installed)\n'
+        return
+    fi
+    if "$DRY_RUN"; then
+        printf '  would build Eww v0.6.0 with Wayland support\n'
+        return
+    fi
+    command -v cargo >/dev/null 2>&1 || die 'cargo is required to build Eww'
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+    printf '  building Eww v0.6.0 for Wayland (this can take a few minutes)...\n'
+    if ! git clone --quiet --depth 1 --branch v0.6.0 \
+        https://github.com/elkowar/eww.git "$tmpdir/eww" ||
+       ! cargo build --quiet --release --no-default-features --features=wayland \
+        --manifest-path "$tmpdir/eww/Cargo.toml"; then
+        rm -rf "$tmpdir"
+        die 'Eww build failed; homepage cannot be installed'
+    fi
+    mkdir -p "$HOME/.local/bin"
+    install -m755 "$tmpdir/eww/target/release/eww" "$HOME/.local/bin/eww"
+    record install "$HOME/.local/bin/eww" "Eww v0.6.0 Wayland build"
+    rm -rf "$tmpdir"
+    printf '  installed %s\n' "$HOME/.local/bin/eww"
+}
+
 run_manual_installs() {
     local entry method pkg
     for entry in "${manual_methods[@]}"; do
@@ -260,6 +303,7 @@ run_manual_installs() {
             omz)      install_oh_my_zsh ;;
             nerdfont) install_nerd_font ;;
             starship) install_starship ;;
+            eww)      install_eww ;;
             skip)     printf '  skipped %s (not available for %s)\n' "$pkg" "$DISTRO" ;;
         esac
     done
@@ -300,8 +344,8 @@ Usage: ./install.sh [--dry-run] [--yes] [--desktop]
 Install the managed terminal profile (zsh, kitty, starship, CLI tools, font).
 Files already managed by Chezmoi are detected and left alone.
 
-  --desktop  Also link Hyprland, Waybar, and Neovim configs and install
-             desktop packages (hyprland, waybar, wofi, etc.).
+  --desktop  Also link Hyprland, Waybar, Homepage, and Neovim configs and
+             install desktop packages (hyprland, waybar, eww, wofi, etc.).
   --dry-run  Print the complete plan without changing anything.
   --yes      Apply without the interactive confirmation prompt.
   -h, --help Show this help.
@@ -471,7 +515,7 @@ show_welcome() {
     printf '  │                                                        │\n'
     printf '  │  This installer can set up:                            │\n'
     printf '  │    terminal   zsh, kitty, starship, CLI tools, font    │\n'
-    printf '  │    desktop    + hyprland, waybar, wofi, nvim configs   │\n'
+    printf '  │    desktop    + hyprland, waybar, homepage, nvim       │\n'
     printf '  │                                                        │\n'
     printf '  │  Run with --dry-run to preview without changes         │\n'
     printf '  └─────────────────────────────────────────────────────────┘\n'
@@ -539,7 +583,7 @@ print_plan() {
         if ((${#desktop_manual_note[@]})); then
             printf '  needs manual install: %s\n' "${desktop_manual_note[*]}"
         fi
-        printf '  desktop links:      ~/.config/hypr, ~/.config/waybar, ~/.config/nvim\n'
+        printf '  desktop links:      ~/.config/hypr, ~/.config/waybar, ~/.config/eww, ~/.config/nvim\n'
         printf '  desktop helpers:    workspace-switcher, power-menu, wofi-singleton, etc.\n'
         printf '  fallback seeds:     hypr/generated/theme.conf, waybar/generated/{theme,component}.css, eww theme.scss\n'
     fi
@@ -627,9 +671,10 @@ manage_terminal_files() {
 }
 
 manage_desktop_files() {
-    printf '\n[3/5] Configuring desktop (hyprland, waybar, nvim)...\n'
+    printf '\n[3/5] Configuring desktop (hyprland, waybar, homepage, nvim)...\n'
     link "$REPO/hypr" "$CFG/hypr"
     link "$REPO/waybar" "$CFG/waybar"
+    link "$REPO/homepage" "$CFG/eww"
     link "$REPO/eww/waybar-panels" "$CFG/eww/waybar-panels"
     link "$REPO/nvim" "$CFG/nvim"
     if "$DRY_RUN"; then
@@ -664,6 +709,24 @@ post_install_summary() {
         printf '\n── Next steps ────────────────────────────────────────────────\n'
         printf '  1. Open a new terminal or run: exec zsh\n'
         if "$DESKTOP"; then
+            local desktop_ok=true
+            command -v waybar >/dev/null 2>&1 || {
+                printf '  ERROR: waybar is not available on PATH\n' >&2
+                desktop_ok=false
+            }
+            { command -v eww >/dev/null 2>&1 || [ -x "$HOME/.local/bin/eww" ]; } || {
+                printf '  ERROR: eww is not available on PATH\n' >&2
+                desktop_ok=false
+            }
+            [ -x "$CFG/waybar/launch.sh" ] || {
+                printf '  ERROR: Waybar launcher is missing\n' >&2
+                desktop_ok=false
+            }
+            [ -x "$CFG/eww/launch.sh" ] || {
+                printf '  ERROR: homepage launcher is missing\n' >&2
+                desktop_ok=false
+            }
+            "$desktop_ok" || die 'desktop verification failed; see errors above'
             printf '  2. Log out and select "Hyprland" at your display manager\n'
             printf '  3. Press Super+Shift+? inside Hyprland for the keybind cheat sheet\n'
             printf '  4. Optional: install the theme engine from the themes repo\n'

@@ -1,0 +1,36 @@
+(defpoll clock :interval "1s" `date +'%H:%M'`)
+(defpoll today :interval "30s" `date +'%A, %B %-d'`)
+(defpoll hostname :interval "60s" `hostname`)
+
+(defwidget shortcut [icon title detail command]
+  (button
+    :class "shortcut"
+    :onclick command
+    (box :orientation "h" :spacing 14
+      (label :class "shortcut-icon" :text icon)
+      (box :orientation "v" :space-evenly false
+        (label :class "shortcut-title" :halign "start" :text title)
+        (label :class "shortcut-detail" :halign "start" :text detail)))))
+
+(defwidget homepage-content []
+  (box :class "homepage-card" :orientation "v" :space-evenly false :spacing 16
+    (label :class "eyebrow" :halign "start" :text "HYPRLAND DESKTOP")
+    (label :class "clock" :halign "start" :text clock)
+    (label :class "date" :halign "start" :text today)
+    (label :class "host" :halign "start" :text "Welcome to ${hostname}")
+    (box :class "divider")
+    (label :class "section-title" :halign "start" :text "Quick start")
+    (shortcut :icon "" :title "Terminal" :detail "Super + Enter" :command "kitty")
+    (shortcut :icon "󰍉" :title "Applications" :detail "Super + D" :command "wofi --show drun")
+    (shortcut :icon "󰌌" :title "Shortcuts" :detail "Super + Shift + ?" :command "kitty -e $HOME/.local/bin/shortcuts")
+    (label :class "hint" :halign "start"
+      :text "Waybar is your command center. Open a terminal and run theme to personalize the desktop.")))
+
+(defwindow homepage
+  :monitor 0
+  :namespace "hyprland-homepage"
+  :stacking "bottom"
+  :focusable false
+  :exclusive false
+  :geometry (geometry :x "3%" :y "13%" :width "480px" :height "690px" :anchor "top left")
+  (homepage-content))

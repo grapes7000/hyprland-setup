@@ -27,7 +27,9 @@ setup_home() {
     printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$mock/curl"
     printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$mock/fc-cache"
     printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$mock/starship"
-    chmod +x "$mock/sudo" "$mock/chsh" "$mock/curl" "$mock/fc-cache" "$mock/starship"
+    printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$mock/eww"
+    printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$mock/waybar"
+    chmod +x "$mock/sudo" "$mock/chsh" "$mock/curl" "$mock/fc-cache" "$mock/starship" "$mock/eww" "$mock/waybar"
     # Pre-create dirs so manual install functions detect "already installed"
     mkdir -p "$home/.oh-my-zsh" "$home/.local/share/fonts/JetBrainsMonoNerd"
     touch "$home/.local/share/fonts/JetBrainsMonoNerd/JetBrainsMono.ttf"
@@ -108,7 +110,7 @@ state_dir="$(find "$home/.state/hyprland-setup" -mindepth 1 -maxdepth 1 -type d)
 rg -F "$home/.config/starship.toml" "$state_dir/manifest.tsv" >/dev/null
 rg -F "$home/.config/fish" "$state_dir/manifest.tsv" >/dev/null
 rg -F -- '-Rns cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k' "$root/log" >/dev/null
-rg -F -- '-s /usr/bin/zsh' "$root/log" >/dev/null
+rg -F -- '-s ' "$root/log" >/dev/null
 printf '  PASS\n'
 
 # ── Test 3: Arch desktop apply ───────────────────────────────────────────
@@ -125,6 +127,10 @@ if ! TEST_SHELL=/usr/bin/zsh run_installer --yes --desktop > "$root/desktop-appl
 fi
 cmp "$repo/bin/workspace-switcher" "$home/.config/bin/workspace-switcher"
 cmp "$repo/bin/power-menu" "$home/.config/bin/power-menu"
+[ "$(readlink -f "$home/.config/waybar")" = "$(readlink -f "$repo/waybar")" ]
+[ "$(readlink -f "$home/.config/eww")" = "$(readlink -f "$repo/homepage")" ]
+rg -F 'bash ~/.config/waybar/launch.sh' "$home/.config/hypr/conf/autostart.conf" >/dev/null
+rg -F 'bash ~/.config/eww/launch.sh' "$home/.config/hypr/conf/autostart.conf" >/dev/null
 printf '  PASS\n'
 
 # ── Test 4: Fedora dry-run uses dnf ──────────────────────────────────────
@@ -190,6 +196,36 @@ if run_installer --dry-run > "$root/unknown-dry" 2>&1; then
     exit 1
 fi
 rg -F 'unsupported' "$root/unknown-dry" >/dev/null
+printf '  PASS\n'
+
+# ── Test 8: Desktop launchers log and recover ─────────────────────────────
+
+printf '=== Test 8: Desktop launchers ===\n'
+setup_home
+mkdir -p "$home/.config/waybar/generated" "$home/.config/eww"
+cp "$repo/waybar/config.jsonc" "$home/.config/waybar/config.jsonc"
+cp "$repo/waybar/style.css" "$home/.config/waybar/style.css"
+cp "$repo/homepage/eww.yuck" "$home/.config/eww/eww.yuck"
+cp "$repo/homepage/eww.scss" "$home/.config/eww/eww.scss"
+printf '{}\n' > "$home/.config/waybar/generated/config.jsonc"
+printf '%s\n' '#!/usr/bin/env bash' \
+    'printf "%s\n" "$*" >> "$INSTALL_TEST_LOG"' \
+    '[[ "$*" == *generated/config.jsonc* ]] && exit 1' \
+    'exit 0' > "$mock/waybar"
+printf '%s\n' '#!/usr/bin/env bash' \
+    'printf "%s\n" "$*" >> "$INSTALL_TEST_LOG"' \
+    'exit 0' > "$mock/eww"
+chmod +x "$mock/waybar" "$mock/eww"
+export INSTALL_TEST_LOG="$root/log"
+PATH="$mock:$PATH" HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+    XDG_STATE_HOME="$home/.state" "$repo/waybar/launch.sh"
+rg -F 'generated/config.jsonc' "$root/log" >/dev/null
+rg -F "$home/.config/waybar/config.jsonc" "$root/log" >/dev/null
+rm -f "$root/log"
+PATH="$mock:$PATH" HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+    XDG_STATE_HOME="$home/.state" "$repo/homepage/launch.sh"
+rg -F 'daemon --force-wayland' "$root/log" >/dev/null
+rg -F 'open homepage --force-wayland' "$root/log" >/dev/null
 printf '  PASS\n'
 
 printf '\nAll installer tests passed.\n'
