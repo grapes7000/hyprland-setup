@@ -83,6 +83,10 @@ start_daemon() {
 }
 
 close_all() {
+    eww update show-system=false show-audio=false show-network=false show-clock=false show-apps=false --config "$config_dir" >/dev/null 2>&1 || true
+    if eww active-windows --config "$config_dir" 2>/dev/null | grep -qE 'system-monitor|audio-panel|network-panel|clock-panel|apps-panel'; then
+        sleep 0.25
+    fi
     eww close system-monitor audio-panel network-panel clock-panel apps-panel --config "$config_dir" >/dev/null 2>&1 || true
     hyprctl keyword unbind ', Escape' >/dev/null 2>&1 || true
 }
@@ -139,17 +143,24 @@ window_name="${panel}-panel"
 [ "$panel" = "system" ] && window_name="system-monitor"
 
 case "$action" in
-    waybar-toggle)
+    waybar-toggle|toggle)
         start_daemon
-        eww open --toggle "$window_name" --config "$config_dir"
-        if eww active-windows --config "$config_dir" 2>/dev/null | grep -q "$window_name"; then bind_escape; else hyprctl keyword unbind ', Escape' >/dev/null 2>&1 || true; fi
-        ;;
-    toggle)
-        start_daemon
-        if eww active-windows --config "$config_dir" 2>/dev/null | grep -q "$window_name"; then close_all; else close_all; eww open "$window_name" --config "$config_dir"; bind_escape; fi
+        show_var="show-${panel}"
+        is_open=false
+        eww active-windows --config "$config_dir" 2>/dev/null | grep -q "$window_name" && is_open=true
+        close_all
+        if [ "$is_open" = false ]; then
+            eww open "$window_name" --config "$config_dir"
+            eww update "${show_var}=true" --config "$config_dir" >/dev/null 2>&1 || true
+            bind_escape
+        fi
         ;;
     open)
-        start_daemon; close_all; eww open "$window_name" --config "$config_dir"; bind_escape
+        start_daemon
+        close_all
+        eww open "$window_name" --config "$config_dir"
+        eww update "show-${panel}=true" --config "$config_dir" >/dev/null 2>&1 || true
+        bind_escape
         ;;
     close)
         close_all

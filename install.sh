@@ -32,8 +32,9 @@ desktop_packages_base=(
     hyprland waybar eww wofi hyprpaper hyprlock hypridle
     xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland
     grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
-    dunst pavucontrol rofi-rbw wlr-randr
+    dunst pavucontrol rofi-rbw wlr-randr cava
     gtk3 gtk-layer-shell libdbusmenu-gtk3 rust cargo gcc pkgconf
+)
 )
 legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
 
@@ -584,7 +585,7 @@ print_plan() {
         fi
         printf '  desktop links:      ~/.config/hypr, ~/.config/waybar, ~/.config/eww, ~/.config/nvim\n'
         printf '  desktop helpers:    workspace-switcher, power-menu, wofi-singleton, etc.\n'
-        printf '  fallback seeds:     hypr/generated/theme.conf, waybar/generated/theme.css\n'
+        printf '  fallback seeds:     hypr/generated/theme.conf, waybar/generated/{theme,component}.css, eww theme.scss\n'
     fi
     printf '──────────────────────────────────────────────────────────────\n\n'
 }
@@ -694,6 +695,8 @@ manage_desktop_files() {
     install_file "$REPO/bin/waybar-panel" "$CFG/bin/waybar-panel" 0755
     seed_file "$REPO/fallback/hypr-theme.conf" "$CFG/hypr/generated/theme.conf" 0644
     seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644
+    seed_file "$REPO/fallback/waybar-component.css" "$CFG/waybar/generated/component.css" 0644
+    seed_file "$REPO/fallback/eww-panels-theme.scss" "$CFG/eww/waybar-panels/generated/theme.scss" 0644
 }
 
 post_install_summary() {

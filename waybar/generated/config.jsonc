@@ -17,7 +17,6 @@
     "custom/ws8",
     "custom/ws9",
     "custom/ws10",
-    "custom/running-apps",
     "custom/window-tracker"
   ],
   "modules-center": [
@@ -29,14 +28,13 @@
     "pulseaudio",
     "network",
     "custom/notifications",
-    "tray",
-    "custom/power"
+    "custom/running-apps",
+    "tray"
   ],
   "custom/vpn": {
     "exec": "~/.config/waybar/scripts/vpn.sh",
     "return-type": "json",
-    "interval": 5,
-    "on-click": "~/.config/waybar/scripts/vpn.sh"
+    "interval": 5
   },
   "custom/ws1": {
     "exec": "~/.config/waybar/scripts/workspaces.sh 1",
@@ -121,8 +119,7 @@
   "custom/window-tracker": {
     "exec": "~/.config/waybar/scripts/window-tracker.sh",
     "return-type": "text",
-    "max-length": 60,
-    "on-click": "hyprctl dispatch focuswindow ^0"
+    "max-length": 60
   },
   "custom/running-apps": {
     "exec": "~/.config/waybar/scripts/running-apps.sh",
