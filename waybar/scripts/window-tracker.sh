@@ -32,9 +32,8 @@ while true; do
     fi
 
     class=$(echo "$window_info" | jq -r '.class // empty' 2>/dev/null)
-    title=$(echo "$window_info" | jq -r '.title // empty' 2>/dev/null)
 
-    if [ -z "$class" ] && [ -z "$title" ]; then
+    if [ -z "$class" ]; then
         echo ""
         sleep 0.5
         continue
@@ -42,13 +41,8 @@ while true; do
 
     icon=$(get_icon "$class")
 
-    max_len=50
-    if [ "${#title}" -gt "$max_len" ]; then
-        title="${title:0:$max_len}…"
-    fi
-
-    if [ -n "$title" ]; then
-        echo "$icon $title"
+    if [ -n "$class" ]; then
+        echo "$icon $class"
     else
         echo "$icon"
     fi
