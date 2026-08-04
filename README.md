@@ -1,5 +1,9 @@
 # hyprland-setup
 
+> **Lakota Shell:** on the active Caelestia Lua layout,
+> `bin/lakota-hypr-theme install` adds a version-aware, reversible styling
+> adapter through the user extension file. See `docs/LAKOTA-THEME.md`.
+
 A modular, themeable **Hyprland** desktop environment with managed configs for
 Hyprland, Waybar, Kitty, Zsh, Starship, and Neovim. Comes with a 36-theme
 engine, per-theme wallpapers, blur/shadow eye-candy, and a set of helper
