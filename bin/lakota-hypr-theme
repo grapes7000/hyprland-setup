@@ -84,7 +84,7 @@ def render(theme: dict, version: tuple[int, int, int]) -> str:
         "        },",
         "    },",
         "    group = {",
-        "        groupbar = {",
+        "        col = {",
         f"            border_active = {lua_string(color('accent2'))},",
         f"            border_locked_active = {lua_string(color('focus'))},",
         "        },",
