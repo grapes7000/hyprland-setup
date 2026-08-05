@@ -130,14 +130,34 @@ cmp "$repo/bin/workspace-switcher" "$home/.config/bin/workspace-switcher"
 cmp "$repo/bin/power-menu" "$home/.config/bin/power-menu"
 [ ! -L "$home/.config/waybar" ]
 cmp <(printf 'waybar sentinel\n') "$home/.config/waybar/sentinel"
-[ "$(readlink -f "$home/.config/eww/eww.yuck")" = "$(readlink -f "$repo/homepage/eww.yuck")" ]
-[ "$(readlink -f "$home/.config/eww/waybar-panels")" = "$(readlink -f "$repo/eww/waybar-panels")" ]
+[ ! -e "$home/.config/eww" ]
 rg -F '[ -x "$HOME/.config/waybar/launch.sh" ]' "$home/.config/hypr/conf/autostart.conf" >/dev/null
-rg -F 'bash ~/.config/eww/launch.sh' "$home/.config/hypr/conf/autostart.conf" >/dev/null
+rg -F '[ -x "$HOME/.config/eww/launch.sh" ]' "$home/.config/hypr/conf/autostart.conf" >/dev/null
 if rg -F -- ' waybar ' "$root/log" >/dev/null; then
     printf 'FAIL: default desktop install should not install Waybar\n' >&2
     exit 1
 fi
+if rg -F -- ' gtk3 ' "$root/log" >/dev/null; then
+    printf 'FAIL: default desktop install should not install Eww build dependencies\n' >&2
+    exit 1
+fi
+printf '  PASS\n'
+
+# ── Test 3c: Arch desktop apply with Eww ───────────────────────────────────
+
+printf '=== Test 3c: Arch desktop apply with Eww ===\n'
+setup_home
+setup_mock_pacman
+write_os_release arch
+
+if ! TEST_SHELL=/usr/bin/zsh run_installer --yes --desktop --eww > "$root/eww-apply" 2>&1; then
+    sed -n '1,160p' "$root/eww-apply" >&2
+    printf 'FAIL: Eww apply exited non-zero\n' >&2
+    exit 1
+fi
+[ "$(readlink -f "$home/.config/eww/eww.yuck")" = "$(readlink -f "$repo/homepage/eww.yuck")" ]
+[ "$(readlink -f "$home/.config/eww/waybar-panels")" = "$(readlink -f "$repo/eww/waybar-panels")" ]
+[ -x "$home/.config/bin/waybar-panel" ]
 printf '  PASS\n'
 
 # ── Test 3b: Arch desktop apply with Waybar ────────────────────────────────

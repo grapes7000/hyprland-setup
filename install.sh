@@ -18,6 +18,7 @@ DRY_RUN=false
 ASSUME_YES=false
 DESKTOP=false
 WAYBAR=false
+EWW=false
 STATE_DIR=""
 DISTRO=""
 PKG_MGR=""
@@ -339,14 +340,15 @@ post_install_fixups() {
 
 usage() {
     cat <<'USAGE'
-Usage: ./install.sh [--dry-run] [--yes] [--desktop] [--waybar]
+Usage: ./install.sh [--dry-run] [--yes] [--desktop] [--waybar] [--eww]
 
 Install the managed terminal profile (zsh, kitty, starship, CLI tools, font).
 Files already managed by Chezmoi are detected and left alone.
 
-  --desktop  Also link Hyprland, Homepage, and Neovim configs and install
-             desktop packages (hyprland, eww, wofi, etc.).
+  --desktop  Also link Hyprland and Neovim configs and install desktop
+             packages (hyprland, wofi, etc.).
   --waybar   With --desktop, also install, configure, and launch Waybar.
+  --eww      With --desktop, also install and configure Eww widgets.
   --dry-run  Print the complete plan without changing anything.
   --yes      Apply without the interactive confirmation prompt.
   -h, --help Show this help.
@@ -473,24 +475,30 @@ preflight() {
         done
     fi
 
-    # Resolve package names for this distro. Waybar is opt-in so desktop mode
-    # can coexist with another shell/bar such as Quickshell.
+    # Resolve package names for this distro. Bars and widgets are opt-in so
+    # desktop mode can coexist with a shell such as Quickshell.
     resolve_packages terminal_packages_base
     terminal_packages=("${resolved_packages[@]}")
     terminal_manual=("${manual_methods[@]}")
 
-    resolve_packages desktop_packages_base
+    local desktop_packages_base_active=() package
+    for package in "${desktop_packages_base[@]}"; do
+        if ! "$WAYBAR" && [ "$package" = waybar ]; then
+            continue
+        fi
+        if ! "$EWW"; then
+            case "$package" in
+                eww|gtk3|gtk-layer-shell|libdbusmenu-gtk3|rust|cargo|gcc|pkgconf) continue ;;
+            esac
+        fi
+        desktop_packages_base_active+=("$package")
+    done
+
+    resolve_packages desktop_packages_base_active
     desktop_packages=("${resolved_packages[@]}")
     desktop_manual=("${manual_methods[@]}")
     desktop_manual_note=("${manual_desktop_packages[@]}")
     desktop_skipped=("${skipped_packages[@]}")
-    if ! "$WAYBAR"; then
-        local filtered_packages=() package
-        for package in "${desktop_packages[@]}"; do
-            [ "$package" = waybar ] || filtered_packages+=("$package")
-        done
-        desktop_packages=("${filtered_packages[@]}")
-    fi
 
     # Debian desktop caveat
     if "$DESKTOP" && [ "$DISTRO" = "debian" ] && ((${#desktop_manual_note[@]})); then
@@ -524,8 +532,9 @@ show_welcome() {
     printf '  │                                                        │\n'
     printf '  │  This installer can set up:                            │\n'
     printf '  │    terminal   zsh, kitty, starship, CLI tools, font    │\n'
-    printf '  │    desktop    + hyprland, homepage, nvim               │\n'
+    printf '  │    desktop    + hyprland, nvim                         │\n'
     printf '  │    waybar     optional; enable with --waybar           │\n'
+    printf '  │    eww        optional; enable with --eww              │\n'
     printf '  │                                                        │\n'
     printf '  │  Run with --dry-run to preview without changes         │\n'
     printf '  └─────────────────────────────────────────────────────────┘\n'
@@ -553,7 +562,7 @@ ask_desktop() {
             printf '  [d] terminal + desktop (default)\n'
             printf '  [t] terminal only\n'
         else
-            printf 'Install terminal tools only, or include the full desktop (Hyprland, Homepage, etc.)?\n'
+            printf 'Install terminal tools only, or include the desktop (Hyprland, Neovim, etc.)?\n'
             printf '  [t] terminal only (default)\n'
             printf '  [d] terminal + desktop\n'
         fi
@@ -593,10 +602,11 @@ print_plan() {
         if ((${#desktop_manual_note[@]})); then
             printf '  needs manual install: %s\n' "${desktop_manual_note[*]}"
         fi
-        printf '  desktop links:      ~/.config/hypr, ~/.config/eww, ~/.config/nvim\n'
+        printf '  desktop links:      ~/.config/hypr, ~/.config/nvim\n'
         printf '  waybar:             %s\n' "$WAYBAR"
+        printf '  eww widgets:        %s\n' "$EWW"
         printf '  desktop helpers:    workspace-switcher, power-menu, wofi-singleton, etc.\n'
-        printf '  fallback seeds:     hypr/generated/theme.conf, eww theme.scss\n'
+        printf '  fallback seeds:     hypr/generated/theme.conf\n'
     fi
     printf '──────────────────────────────────────────────────────────────\n\n'
 }
@@ -682,15 +692,17 @@ manage_terminal_files() {
 }
 
 manage_desktop_files() {
-    printf '\n[3/5] Configuring desktop (hyprland, homepage, nvim)...\n'
+    printf '\n[3/5] Configuring desktop (hyprland, nvim)...\n'
     link "$REPO/hypr" "$CFG/hypr"
     if "$WAYBAR"; then
         link "$REPO/waybar" "$CFG/waybar"
     fi
-    link "$REPO/homepage/eww.yuck" "$CFG/eww/eww.yuck"
-    link "$REPO/homepage/eww.scss" "$CFG/eww/eww.scss"
-    link "$REPO/homepage/launch.sh" "$CFG/eww/launch.sh"
-    link "$REPO/eww/waybar-panels" "$CFG/eww/waybar-panels"
+    if "$EWW"; then
+        link "$REPO/homepage/eww.yuck" "$CFG/eww/eww.yuck"
+        link "$REPO/homepage/eww.scss" "$CFG/eww/eww.scss"
+        link "$REPO/homepage/launch.sh" "$CFG/eww/launch.sh"
+        link "$REPO/eww/waybar-panels" "$CFG/eww/waybar-panels"
+    fi
     link "$REPO/nvim" "$CFG/nvim"
     if "$DRY_RUN"; then
         printf '  would generate %s (expand __HOME__ -> %s)\n' "$REPO/hypr/hyprpaper.conf" "$HOME"
@@ -707,13 +719,17 @@ manage_desktop_files() {
     install_file "$REPO/bin/generate-keybinds" "$CFG/bin/generate-keybinds" 0755
     install_file "$REPO/bin/keybind-menu" "$CFG/bin/keybind-menu" 0755
     install_file "$REPO/bin/wofi-singleton" "$HOME/.local/bin/wofi-singleton" 0755
-    install_file "$REPO/bin/waybar-panel" "$CFG/bin/waybar-panel" 0755
+    if "$EWW"; then
+        install_file "$REPO/bin/waybar-panel" "$CFG/bin/waybar-panel" 0755
+    fi
     seed_file "$REPO/fallback/hypr-theme.conf" "$CFG/hypr/generated/theme.conf" 0644
     if "$WAYBAR"; then
         seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644
         seed_file "$REPO/waybar/generated/component.css" "$CFG/waybar/generated/component.css" 0644
     fi
-    seed_file "$REPO/fallback/eww-panels-theme.scss" "$CFG/eww/waybar-panels/generated/theme.scss" 0644
+    if "$EWW"; then
+        seed_file "$REPO/fallback/eww-panels-theme.scss" "$CFG/eww/waybar-panels/generated/theme.scss" 0644
+    fi
 }
 
 post_install_summary() {
@@ -737,14 +753,16 @@ post_install_summary() {
                     desktop_ok=false
                 }
             fi
-            { command -v eww >/dev/null 2>&1 || [ -x "$HOME/.local/bin/eww" ]; } || {
-                printf '  ERROR: eww is not available on PATH\n' >&2
-                desktop_ok=false
-            }
-            [ -x "$CFG/eww/launch.sh" ] || {
-                printf '  ERROR: homepage launcher is missing\n' >&2
-                desktop_ok=false
-            }
+            if "$EWW"; then
+                { command -v eww >/dev/null 2>&1 || [ -x "$HOME/.local/bin/eww" ]; } || {
+                    printf '  ERROR: eww is not available on PATH\n' >&2
+                    desktop_ok=false
+                }
+                [ -x "$CFG/eww/launch.sh" ] || {
+                    printf '  ERROR: homepage launcher is missing\n' >&2
+                    desktop_ok=false
+                }
+            fi
             "$desktop_ok" || die 'desktop verification failed; see errors above'
             printf '  2. Log out and select "Hyprland" at your display manager\n'
             printf '  3. Press Super+Shift+? inside Hyprland for the keybind cheat sheet\n'
@@ -764,6 +782,7 @@ while (($#)); do
         --yes) ASSUME_YES=true ;;
         --desktop) DESKTOP=true ;;
         --waybar) WAYBAR=true ; DESKTOP=true ;;
+        --eww) EWW=true ; DESKTOP=true ;;
         -h|--help) usage; exit 0 ;;
         *) usage >&2; die "unknown option: $1" ;;
     esac
