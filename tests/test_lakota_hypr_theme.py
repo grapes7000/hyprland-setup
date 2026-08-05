@@ -14,6 +14,8 @@ def test_render_uses_current_nested_shadow_syntax():
     output = mod.render(THEME, (0, 56, 1))
     assert "shadow = {" in output
     assert 'active_border = "rgba(112233ff)"' in output
+    assert "    group = {\n        col = {" in output
+    assert "groupbar = {" not in output
     assert 'border_active = "rgba(445566ff)"' in output
     assert "gaps_in = 4" in output and "gaps_out = 9" in output
     assert 'offset = "0 -4"' in output
