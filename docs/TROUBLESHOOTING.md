@@ -310,8 +310,8 @@ exec hyprpaper`) is the simplest wallpaper reload.
 
 ## 7. Zsh shell notes
 
-The installer makes **Zsh** the login shell and uses Starship rather than
-Powerlevel10k. Its managed profile puts `~/.local/bin` on `PATH`, enables fzf,
+The installer makes **Zsh** the login shell and uses Powerlevel10k. Its managed
+profile puts `~/.local/bin` on `PATH`, enables fzf,
 zoxide, direnv, autosuggestions, and syntax highlighting. Put customizations
 in `~/.zshrc.local`; it is sourced before syntax highlighting.
 

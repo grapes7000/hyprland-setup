@@ -200,7 +200,7 @@ The installer **only** manages these paths:
 |---|---|---|
 | `~/.zshrc` | Symlink to repo | terminal |
 | `~/.config/kitty/kitty.conf` | Copy from repo | terminal |
-| `~/.config/starship.toml` | Copy from repo | terminal |
+| `~/.p10k.zsh` | Preserved and sourced when present | terminal |
 | `~/.local/bin/shortcuts` | Copy from repo | terminal |
 | `~/.config/hypr` | Symlink to repo | desktop |
 | `~/.config/waybar` | Symlink to repo | desktop |
@@ -253,15 +253,15 @@ The installer runs in phases with progress output:
 
 ### Phase 2: Packages
 - Installs terminal tools via your package manager
-- On non-Arch: manually installs Oh My Zsh, Nerd Font, and (Debian) Starship
+- Manually installs Oh My Zsh, Powerlevel10k, and the Nerd Font when needed
 - If `--desktop`: installs Hyprland, Waybar, Wofi, and related packages
 - On Arch: removes legacy packages if found (cachyos-fish-config, fish,
-  cachyos-zsh-config, zsh-theme-powerlevel10k)
+  cachyos-zsh-config)
 
 ### Phase 3: Terminal config
-- Archives existing `~/.config/fish` and `~/.p10k.zsh` (legacy migration)
+- Archives an existing `~/.config/fish` directory during legacy migration
 - Symlinks `~/.zshrc` → repo's `zsh/.zshrc`
-- Copies `kitty.conf` and `starship.toml` to `~/.config/`
+- Copies `kitty.conf` to `~/.config/` and configures Powerlevel10k for Zsh
 - Installs `shortcuts` command to `~/.local/bin/`
 - Skips any target managed by [Chezmoi](https://www.chezmoi.io/)
 

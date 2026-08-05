@@ -1,9 +1,16 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # ~/.zshrc — managed by Chezmoi.
-# Oh My Zsh manages plugins; Starship draws the prompt.
+# Oh My Zsh manages plugins and Powerlevel10k draws the prompt.
 
 export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 [ -r "$ZSH/oh-my-zsh.sh" ] || export ZSH="/usr/share/oh-my-zsh"
-ZSH_THEME=""
+ZSH_THEME="powerlevel10k/powerlevel10k"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 13
 
@@ -49,7 +56,7 @@ export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border=rounded --info=i
 command -v fd >/dev/null 2>&1 && export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude .git"
 
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+[ -r "$HOME/.p10k.zsh" ] && source "$HOME/.p10k.zsh"
 [ -r "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
 for _p in /usr/share/zsh/plugins/zsh-syntax-highlighting /usr/share/zsh-syntax-highlighting /usr/share/oh-my-zsh/custom/plugins/zsh-syntax-highlighting; do
@@ -61,3 +68,6 @@ unset _p
 alias ls='eza --icons=always --group-directories-first'
 alias ll='eza -la --icons=always --group-directories-first --git'
 alias tree='eza --tree --icons=always'
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

@@ -32,6 +32,8 @@ setup_home() {
     chmod +x "$mock/sudo" "$mock/chsh" "$mock/curl" "$mock/fc-cache" "$mock/starship" "$mock/eww" "$mock/waybar"
     # Pre-create dirs so manual install functions detect "already installed"
     mkdir -p "$home/.oh-my-zsh" "$home/.local/share/fonts/JetBrainsMonoNerd"
+    mkdir -p "$home/.oh-my-zsh/custom/themes/powerlevel10k"
+    touch "$home/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
     touch "$home/.local/share/fonts/JetBrainsMonoNerd/JetBrainsMono.ttf"
     rm -f "$root/log"
 }
@@ -60,6 +62,7 @@ write_os_release() {
 
 run_installer() {
     env HOME="$home" USER=tester SHELL="${TEST_SHELL:-/bin/bash}" \
+        XDG_CONFIG_HOME="$home/.config" \
         XDG_STATE_HOME="$home/.state" \
         INSTALL_OS_RELEASE="$root/etc/os-release" \
         PATH="$mock:$PATH" \
@@ -100,16 +103,15 @@ if ! run_installer --yes > "$root/apply" 2>&1; then
 fi
 [ -L "$home/.zshrc" ]
 cmp "$repo/kitty/kitty.conf" "$home/.config/kitty/kitty.conf"
-cmp "$repo/starship/starship.toml" "$home/.config/starship.toml"
 cmp <(printf 'old bash\n') "$home/.bashrc"
 cmp <(printf 'hypr sentinel\n') "$home/.config/hypr/sentinel"
 cmp <(printf 'waybar sentinel\n') "$home/.config/waybar/sentinel"
 cmp <(printf 'nvim sentinel\n') "$home/.config/nvim/sentinel"
 state_dir="$(find "$home/.state/hyprland-setup" -mindepth 1 -maxdepth 1 -type d)"
 [ -f "$state_dir/manifest.tsv" ]
-rg -F "$home/.config/starship.toml" "$state_dir/manifest.tsv" >/dev/null
+! rg -F "$home/.config/starship.toml" "$state_dir/manifest.tsv" >/dev/null
 rg -F "$home/.config/fish" "$state_dir/manifest.tsv" >/dev/null
-rg -F -- '-Rns cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k' "$root/log" >/dev/null
+rg -F -- '-Rns cachyos-fish-config fish cachyos-zsh-config' "$root/log" >/dev/null
 rg -F -- '-s ' "$root/log" >/dev/null
 printf '  PASS\n'
 

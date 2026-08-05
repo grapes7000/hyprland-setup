@@ -24,7 +24,7 @@ PKG_MGR=""
 # ── Package lists (Arch names as canonical keys) ─────────────────────────
 
 terminal_packages_base=(
-    zsh kitty starship oh-my-zsh-git zsh-autosuggestions zsh-syntax-highlighting
+    zsh kitty oh-my-zsh-git zsh-autosuggestions zsh-syntax-highlighting powerlevel10k
     fzf ripgrep fd bat eza thefuck zoxide direnv yazi jq tldr
     git curl unzip ttf-jetbrains-mono-nerd neovim
 )
@@ -35,8 +35,7 @@ desktop_packages_base=(
     dunst pavucontrol rofi-rbw wlr-randr cava
     gtk3 gtk-layer-shell libdbusmenu-gtk3 rust cargo gcc pkgconf
 )
-)
-legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
+legacy_packages=(cachyos-fish-config fish cachyos-zsh-config)
 
 # ── Distro detection ─────────────────────────────────────────────────────
 
@@ -80,6 +79,7 @@ detect_distro() {
 declare -A manual_install_method
 manual_install_method=(
     [oh-my-zsh-git]=omz
+    [powerlevel10k]=p10k
     [ttf-jetbrains-mono-nerd]=nerdfont
     [eww]=eww
 )
@@ -88,6 +88,7 @@ manual_install_method=(
 declare -A pkg_arch
 pkg_arch=(
     [oh-my-zsh-git]=__manual__
+    [powerlevel10k]=__manual__
     [eww]=__manual__
 )
 
@@ -95,6 +96,7 @@ pkg_arch=(
 declare -A pkg_fedora
 pkg_fedora=(
     [oh-my-zsh-git]=__manual__
+    [powerlevel10k]=__manual__
     [ttf-jetbrains-mono-nerd]=__manual__
     [fd]=fd-find
     [polkit-kde-agent]=polkit-kde-agent-1
@@ -114,6 +116,7 @@ pkg_fedora=(
 declare -A pkg_debian
 pkg_debian=(
     [oh-my-zsh-git]=__manual__
+    [powerlevel10k]=__manual__
     [ttf-jetbrains-mono-nerd]=__manual__
     [starship]=__manual__
     [fd]=fd-find
@@ -231,6 +234,23 @@ install_oh_my_zsh() {
     }
 }
 
+install_powerlevel10k() {
+    local theme_dir="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+    if [ -r "$theme_dir/powerlevel10k.zsh-theme" ]; then
+        printf '  unchanged Powerlevel10k (already installed)\n'
+        return
+    fi
+    if "$DRY_RUN"; then
+        printf '  would install Powerlevel10k from upstream\n'
+        return
+    fi
+    printf '  installing Powerlevel10k from upstream...\n'
+    mkdir -p "$(dirname "$theme_dir")"
+    git clone --depth 1 https://github.com/romkatv/powerlevel10k.git "$theme_dir" || {
+        printf '  warning: Powerlevel10k install failed; install it manually later\n'
+    }
+}
+
 install_nerd_font() {
     local font_dir="$HOME/.local/share/fonts/JetBrainsMonoNerd"
     if [ -d "$font_dir" ] && ls "$font_dir"/*.ttf >/dev/null 2>&1; then
@@ -301,6 +321,7 @@ run_manual_installs() {
         pkg="${entry#*:}"
         case "$method" in
             omz)      install_oh_my_zsh ;;
+            p10k)     install_powerlevel10k ;;
             nerdfont) install_nerd_font ;;
             starship) install_starship ;;
             eww)      install_eww ;;
@@ -341,7 +362,7 @@ usage() {
     cat <<'USAGE'
 Usage: ./install.sh [--dry-run] [--yes] [--desktop]
 
-Install the managed terminal profile (zsh, kitty, starship, CLI tools, font).
+Install the managed terminal profile (zsh, kitty, Powerlevel10k, CLI tools, font).
 Files already managed by Chezmoi are detected and left alone.
 
   --desktop  Also link Hyprland, Waybar, Homepage, and Neovim configs and
@@ -514,7 +535,7 @@ show_welcome() {
     printf '  │  Detected: %-43s │\n' "$distro_label"
     printf '  │                                                        │\n'
     printf '  │  This installer can set up:                            │\n'
-    printf '  │    terminal   zsh, kitty, starship, CLI tools, font    │\n'
+    printf '  │    terminal   zsh, kitty, Powerlevel10k, tools, font  │\n'
     printf '  │    desktop    + hyprland, waybar, homepage, nvim       │\n'
     printf '  │                                                        │\n'
     printf '  │  Run with --dry-run to preview without changes         │\n'
@@ -568,7 +589,7 @@ print_plan() {
         printf '\n'
     fi
     printf '  legacy removal:     %s\n' "${packages_to_remove[*]:-(none)}"
-    printf '  config targets:     ~/.zshrc, ~/.config/kitty/kitty.conf, ~/.config/starship.toml\n'
+    printf '  config targets:     ~/.zshrc, ~/.config/kitty/kitty.conf\n'
     printf '  always manage:      ~/.local/bin/shortcuts\n'
     printf '  login shell:        chsh -s zsh (if needed)\n'
     printf '  state directory:    %s/install-<timestamp>\n' "$STATE_ROOT"
@@ -643,10 +664,8 @@ set_zsh_as_login_shell() {
 }
 
 manage_terminal_files() {
-    printf '\n[2/5] Configuring terminal (zsh, kitty, starship)...\n'
+    printf '\n[2/5] Configuring terminal (zsh, kitty, Powerlevel10k)...\n'
     archive "$CFG/fish"
-    archive "$HOME/.p10k.zsh"
-
     if chezmoi_manages "$HOME/.zshrc"; then
         printf '  Chezmoi owns %s; leaving it unchanged\n' "$HOME/.zshrc"
     else
@@ -657,14 +676,6 @@ manage_terminal_files() {
         printf '  Chezmoi owns %s; leaving it unchanged\n' "$CFG/kitty/kitty.conf"
     else
         install_file "$REPO/kitty/kitty.conf" "$CFG/kitty/kitty.conf" 0644
-    fi
-
-    if chezmoi_manages "$CFG/starship.toml"; then
-        printf '  Chezmoi owns %s; leaving it unchanged\n' "$CFG/starship.toml"
-    elif grep -q 'AUTO-GENERATED by `theme`' "$CFG/starship.toml" 2>/dev/null; then
-        printf '  unchanged %s (managed by theme engine)\n' "$CFG/starship.toml"
-    else
-        install_file "$REPO/starship/starship.toml" "$CFG/starship.toml" 0644
     fi
 
     install_file "$REPO/bin/shortcuts" "$HOME/.local/bin/shortcuts" 0755
