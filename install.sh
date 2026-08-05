@@ -17,6 +17,7 @@ STATE_ROOT="${XDG_STATE_HOME:-$HOME/.local/state}/hyprland-setup"
 DRY_RUN=false
 ASSUME_YES=false
 DESKTOP=false
+WAYBAR=false
 STATE_DIR=""
 DISTRO=""
 PKG_MGR=""
@@ -34,7 +35,6 @@ desktop_packages_base=(
     grim slurp wl-clipboard brightnessctl playerctl pamixer python-pillow
     dunst pavucontrol rofi-rbw wlr-randr cava
     gtk3 gtk-layer-shell libdbusmenu-gtk3 rust cargo gcc pkgconf
-)
 )
 legacy_packages=(cachyos-fish-config fish cachyos-zsh-config zsh-theme-powerlevel10k)
 
@@ -339,13 +339,14 @@ post_install_fixups() {
 
 usage() {
     cat <<'USAGE'
-Usage: ./install.sh [--dry-run] [--yes] [--desktop]
+Usage: ./install.sh [--dry-run] [--yes] [--desktop] [--waybar]
 
 Install the managed terminal profile (zsh, kitty, starship, CLI tools, font).
 Files already managed by Chezmoi are detected and left alone.
 
-  --desktop  Also link Hyprland, Waybar, Homepage, and Neovim configs and
-             install desktop packages (hyprland, waybar, eww, wofi, etc.).
+  --desktop  Also link Hyprland, Homepage, and Neovim configs and install
+             desktop packages (hyprland, eww, wofi, etc.).
+  --waybar   With --desktop, also install, configure, and launch Waybar.
   --dry-run  Print the complete plan without changing anything.
   --yes      Apply without the interactive confirmation prompt.
   -h, --help Show this help.
@@ -472,7 +473,8 @@ preflight() {
         done
     fi
 
-    # Resolve package names for this distro
+    # Resolve package names for this distro. Waybar is opt-in so desktop mode
+    # can coexist with another shell/bar such as Quickshell.
     resolve_packages terminal_packages_base
     terminal_packages=("${resolved_packages[@]}")
     terminal_manual=("${manual_methods[@]}")
@@ -482,6 +484,13 @@ preflight() {
     desktop_manual=("${manual_methods[@]}")
     desktop_manual_note=("${manual_desktop_packages[@]}")
     desktop_skipped=("${skipped_packages[@]}")
+    if ! "$WAYBAR"; then
+        local filtered_packages=() package
+        for package in "${desktop_packages[@]}"; do
+            [ "$package" = waybar ] || filtered_packages+=("$package")
+        done
+        desktop_packages=("${filtered_packages[@]}")
+    fi
 
     # Debian desktop caveat
     if "$DESKTOP" && [ "$DISTRO" = "debian" ] && ((${#desktop_manual_note[@]})); then
@@ -515,7 +524,8 @@ show_welcome() {
     printf '  │                                                        │\n'
     printf '  │  This installer can set up:                            │\n'
     printf '  │    terminal   zsh, kitty, starship, CLI tools, font    │\n'
-    printf '  │    desktop    + hyprland, waybar, homepage, nvim       │\n'
+    printf '  │    desktop    + hyprland, homepage, nvim               │\n'
+    printf '  │    waybar     optional; enable with --waybar           │\n'
     printf '  │                                                        │\n'
     printf '  │  Run with --dry-run to preview without changes         │\n'
     printf '  └─────────────────────────────────────────────────────────┘\n'
@@ -543,7 +553,7 @@ ask_desktop() {
             printf '  [d] terminal + desktop (default)\n'
             printf '  [t] terminal only\n'
         else
-            printf 'Install terminal tools only, or include the full desktop (Hyprland, Waybar, etc.)?\n'
+            printf 'Install terminal tools only, or include the full desktop (Hyprland, Homepage, etc.)?\n'
             printf '  [t] terminal only (default)\n'
             printf '  [d] terminal + desktop\n'
         fi
@@ -583,9 +593,10 @@ print_plan() {
         if ((${#desktop_manual_note[@]})); then
             printf '  needs manual install: %s\n' "${desktop_manual_note[*]}"
         fi
-        printf '  desktop links:      ~/.config/hypr, ~/.config/waybar, ~/.config/eww, ~/.config/nvim\n'
+        printf '  desktop links:      ~/.config/hypr, ~/.config/eww, ~/.config/nvim\n'
+        printf '  waybar:             %s\n' "$WAYBAR"
         printf '  desktop helpers:    workspace-switcher, power-menu, wofi-singleton, etc.\n'
-        printf '  fallback seeds:     hypr/generated/theme.conf, waybar/generated/{theme,component}.css, eww theme.scss\n'
+        printf '  fallback seeds:     hypr/generated/theme.conf, eww theme.scss\n'
     fi
     printf '──────────────────────────────────────────────────────────────\n\n'
 }
@@ -671,10 +682,14 @@ manage_terminal_files() {
 }
 
 manage_desktop_files() {
-    printf '\n[3/5] Configuring desktop (hyprland, waybar, homepage, nvim)...\n'
+    printf '\n[3/5] Configuring desktop (hyprland, homepage, nvim)...\n'
     link "$REPO/hypr" "$CFG/hypr"
-    link "$REPO/waybar" "$CFG/waybar"
-    link "$REPO/homepage" "$CFG/eww"
+    if "$WAYBAR"; then
+        link "$REPO/waybar" "$CFG/waybar"
+    fi
+    link "$REPO/homepage/eww.yuck" "$CFG/eww/eww.yuck"
+    link "$REPO/homepage/eww.scss" "$CFG/eww/eww.scss"
+    link "$REPO/homepage/launch.sh" "$CFG/eww/launch.sh"
     link "$REPO/eww/waybar-panels" "$CFG/eww/waybar-panels"
     link "$REPO/nvim" "$CFG/nvim"
     if "$DRY_RUN"; then
@@ -694,8 +709,10 @@ manage_desktop_files() {
     install_file "$REPO/bin/wofi-singleton" "$HOME/.local/bin/wofi-singleton" 0755
     install_file "$REPO/bin/waybar-panel" "$CFG/bin/waybar-panel" 0755
     seed_file "$REPO/fallback/hypr-theme.conf" "$CFG/hypr/generated/theme.conf" 0644
-    seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644
-    seed_file "$REPO/fallback/waybar-component.css" "$CFG/waybar/generated/component.css" 0644
+    if "$WAYBAR"; then
+        seed_file "$REPO/fallback/waybar-theme.css" "$CFG/waybar/generated/theme.css" 0644
+        seed_file "$REPO/waybar/generated/component.css" "$CFG/waybar/generated/component.css" 0644
+    fi
     seed_file "$REPO/fallback/eww-panels-theme.scss" "$CFG/eww/waybar-panels/generated/theme.scss" 0644
 }
 
@@ -710,16 +727,18 @@ post_install_summary() {
         printf '  1. Open a new terminal or run: exec zsh\n'
         if "$DESKTOP"; then
             local desktop_ok=true
-            command -v waybar >/dev/null 2>&1 || {
-                printf '  ERROR: waybar is not available on PATH\n' >&2
-                desktop_ok=false
-            }
+            if "$WAYBAR"; then
+                command -v waybar >/dev/null 2>&1 || {
+                    printf '  ERROR: waybar is not available on PATH\n' >&2
+                    desktop_ok=false
+                }
+                [ -x "$CFG/waybar/launch.sh" ] || {
+                    printf '  ERROR: Waybar launcher is missing\n' >&2
+                    desktop_ok=false
+                }
+            fi
             { command -v eww >/dev/null 2>&1 || [ -x "$HOME/.local/bin/eww" ]; } || {
                 printf '  ERROR: eww is not available on PATH\n' >&2
-                desktop_ok=false
-            }
-            [ -x "$CFG/waybar/launch.sh" ] || {
-                printf '  ERROR: Waybar launcher is missing\n' >&2
                 desktop_ok=false
             }
             [ -x "$CFG/eww/launch.sh" ] || {
@@ -744,6 +763,7 @@ while (($#)); do
         --dry-run) DRY_RUN=true ;;
         --yes) ASSUME_YES=true ;;
         --desktop) DESKTOP=true ;;
+        --waybar) WAYBAR=true ; DESKTOP=true ;;
         -h|--help) usage; exit 0 ;;
         *) usage >&2; die "unknown option: $1" ;;
     esac

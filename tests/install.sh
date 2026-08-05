@@ -60,6 +60,7 @@ write_os_release() {
 
 run_installer() {
     env HOME="$home" USER=tester SHELL="${TEST_SHELL:-/bin/bash}" \
+        XDG_CONFIG_HOME="$home/.config" \
         XDG_STATE_HOME="$home/.state" \
         INSTALL_OS_RELEASE="$root/etc/os-release" \
         PATH="$mock:$PATH" \
@@ -127,10 +128,32 @@ if ! TEST_SHELL=/usr/bin/zsh run_installer --yes --desktop > "$root/desktop-appl
 fi
 cmp "$repo/bin/workspace-switcher" "$home/.config/bin/workspace-switcher"
 cmp "$repo/bin/power-menu" "$home/.config/bin/power-menu"
-[ "$(readlink -f "$home/.config/waybar")" = "$(readlink -f "$repo/waybar")" ]
-[ "$(readlink -f "$home/.config/eww")" = "$(readlink -f "$repo/homepage")" ]
-rg -F 'bash ~/.config/waybar/launch.sh' "$home/.config/hypr/conf/autostart.conf" >/dev/null
+[ ! -L "$home/.config/waybar" ]
+cmp <(printf 'waybar sentinel\n') "$home/.config/waybar/sentinel"
+[ "$(readlink -f "$home/.config/eww/eww.yuck")" = "$(readlink -f "$repo/homepage/eww.yuck")" ]
+[ "$(readlink -f "$home/.config/eww/waybar-panels")" = "$(readlink -f "$repo/eww/waybar-panels")" ]
+rg -F '[ -x "$HOME/.config/waybar/launch.sh" ]' "$home/.config/hypr/conf/autostart.conf" >/dev/null
 rg -F 'bash ~/.config/eww/launch.sh' "$home/.config/hypr/conf/autostart.conf" >/dev/null
+if rg -F -- ' waybar ' "$root/log" >/dev/null; then
+    printf 'FAIL: default desktop install should not install Waybar\n' >&2
+    exit 1
+fi
+printf '  PASS\n'
+
+# ── Test 3b: Arch desktop apply with Waybar ────────────────────────────────
+
+printf '=== Test 3b: Arch desktop apply with Waybar ===\n'
+setup_home
+setup_mock_pacman
+write_os_release arch
+
+if ! TEST_SHELL=/usr/bin/zsh run_installer --yes --desktop --waybar > "$root/waybar-apply" 2>&1; then
+    sed -n '1,160p' "$root/waybar-apply" >&2
+    printf 'FAIL: Waybar apply exited non-zero\n' >&2
+    exit 1
+fi
+[ "$(readlink -f "$home/.config/waybar")" = "$(readlink -f "$repo/waybar")" ]
+rg -F -- ' waybar ' "$root/log" >/dev/null
 printf '  PASS\n'
 
 # ── Test 4: Fedora dry-run uses dnf ──────────────────────────────────────

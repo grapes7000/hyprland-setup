@@ -74,6 +74,7 @@ For a non-interactive run (e.g., scripting):
 ```sh
 ./install.sh --yes              # terminal only, no prompts
 ./install.sh --yes --desktop    # terminal + desktop, no prompts
+./install.sh --yes --desktop --waybar  # desktop with the optional Waybar
 ```
 
 ### Step 4: Start using it
@@ -199,8 +200,8 @@ The installer **only** manages these paths:
 | `~/.config/starship.toml` | Copy from repo | terminal |
 | `~/.local/bin/shortcuts` | Copy from repo | terminal |
 | `~/.config/hypr` | Symlink to repo | desktop |
-| `~/.config/waybar` | Symlink to repo | desktop |
-| `~/.config/eww` | Symlink to the bundled homepage | desktop |
+| `~/.config/waybar` | Symlink to repo | desktop + `--waybar` |
+| `~/.config/eww/*` | Symlinks to the bundled Homepage and panels | desktop |
 | `~/.config/nvim` | Symlink to repo | desktop |
 | `~/.config/bin/*` | Helper scripts | desktop |
 | `~/.local/bin/wofi-singleton` | Copy from repo | desktop |
@@ -250,7 +251,9 @@ The installer runs in phases with progress output:
 ### Phase 2: Packages
 - Installs terminal tools via your package manager
 - On non-Arch: manually installs Oh My Zsh, Nerd Font, and (Debian) Starship
-- If `--desktop`: installs Hyprland, Waybar, Wofi, and related packages
+- If `--desktop`: installs Hyprland, Wofi, and related packages
+- If `--waybar`: also installs and configures Waybar (disabled by default so
+  other bars such as Quickshell do not conflict)
 - On Arch: removes legacy packages if found (cachyos-fish-config, fish,
   cachyos-zsh-config, zsh-theme-powerlevel10k)
 
@@ -262,7 +265,8 @@ The installer runs in phases with progress output:
 - Skips any target managed by [Chezmoi](https://www.chezmoi.io/)
 
 ### Phase 4: Desktop config (only with `--desktop`)
-- Symlinks `~/.config/hypr`, `~/.config/waybar`, `~/.config/nvim` → repo dirs
+- Symlinks `~/.config/hypr`, `~/.config/nvim` → repo dirs
+- With `--waybar`, symlinks `~/.config/waybar` → the repo's Waybar config
 - Generates `hyprpaper.conf` from template (expands `$HOME` path)
 - Installs helper scripts (power menu, workspace switcher, etc.)
 - Seeds fallback theme files if the theme engine hasn't run yet
